@@ -2,54 +2,82 @@ import os
 import logging
 
 from telegram import Update
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram.ext import (
+    Application,
+    CommandHandler,
+    MessageHandler,
+    ContextTypes,
+    filters,
+)
 
-# -----------------------------
-# تنظیمات لاگ
-# -----------------------------
+from database import search_documents
+
+
 logging.basicConfig(
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
     level=logging.INFO
 )
 
-# -----------------------------
-# دریافت توکن از Render
-# -----------------------------
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-
-print("BOT_TOKEN exists:", bool(BOT_TOKEN))
 
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN تنظیم نشده است.")
 
 
-# -----------------------------
-# دستور /start
-# -----------------------------
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "🇦🇫 به ربات دانشنامه افغانستان خوش آمدید!\n\n"
-        "📚 این دانشنامه در حال آماده‌سازی است.\n\n"
-        "بعداً می‌توانی چیزهایی مثل:\n"
-        "• تاریخ\n"
-        "• شاهان\n"
-        "• جنگ‌ها\n"
-        "• شهرها\n"
-        "• ولایت‌ها و ولسوالی‌ها\n"
-        "• کوه‌ها و رودخانه‌ها\n"
-        "• بندها\n"
-        "را جستجو کنی."
+        "🔎 برای جستجو، نام موضوع موردنظر را بفرست.\n\n"
+        "مثال:\n"
+        "احمدشاه ابدالی\n"
+        "غزنی\n"
+        "بند کجکی\n"
+        "جنگ اول افغان و انگلیس"
     )
 
 
-# -----------------------------
-# اجرای ربات
-# -----------------------------
+async def search(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.message.text.strip()
+
+    if not query:
+        return
+
+    results = search_documents(query)
+
+    if not results:
+        await update.message.reply_text(
+            f"🔎 برای «{query}» چیزی در دانشنامه پیدا نشد.\n\n"
+            "📚 منابع بیشتری به‌زودی اضافه می‌شوند."
+        )
+        return
+
+    message = f"🔎 نتایج جستجو برای: {query}\n\n"
+
+    for i, (_, title, category, content) in enumerate(results, 1):
+        short_content = content[:500]
+
+        message += (
+            f"📌 {i}. {title}\n"
+            f"📂 دسته: {category}\n"
+            f"{short_content}\n\n"
+        )
+
+        if len(message) > 3500:
+            break
+
+    await update.message.reply_text(message)
+
+
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
 
+    app.add_handler(CommandHandler("start", start))
+
     app.add_handler(
-        CommandHandler("start", start)
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            search
+        )
     )
 
     print("🇦🇫 Afghanistan Knowledge Bot is running...")
