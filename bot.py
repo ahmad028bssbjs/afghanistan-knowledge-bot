@@ -2,7 +2,12 @@ import os
 import json
 import logging
 
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import (
+    Update,
+    InlineKeyboardButton,
+    InlineKeyboardMarkup
+)
+
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -11,7 +16,10 @@ from telegram.ext import (
     filters
 )
 
-from database import search_documents, add_document
+from database import (
+    search_documents,
+    add_document
+)
 
 
 logging.basicConfig(level=logging.INFO)
@@ -19,64 +27,89 @@ logging.basicConfig(level=logging.INFO)
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 if not BOT_TOKEN:
-    raise RuntimeError("BOT_TOKEN تنظیم نشده است.")
+    raise RuntimeError(
+        "BOT_TOKEN تنظیم نشده است."
+    )
 
 
-# =========================
+# ==================================
 # داده‌های آزمایشی
-# =========================
+# ==================================
 
 TEST_DATA = [
+
     (
         "کابل",
         "جغرافیا",
-        "کابل پایتخت افغانستان است."
+        "کابل پایتخت افغانستان است.",
+        "کابل افغانستان پایتخت شهر"
     ),
+
     (
         "غزنی",
         "جغرافیا",
-        "غزنی یکی از شهرهای تاریخی افغانستان است."
+        "غزنی یکی از شهرهای تاریخی افغانستان است.",
+        "غزنی افغانستان شهر تاریخی"
     ),
+
     (
         "هرات",
         "جغرافیا",
-        "هرات یکی از شهرهای مهم تاریخی افغانستان است."
+        "هرات یکی از شهرهای مهم تاریخی افغانستان است.",
+        "هرات افغانستان شهر تاریخی"
     ),
+
     (
         "بند کجکی",
-        "بندها",
-        "بند کجکی در ولایت هلمند افغانستان قرار دارد."
+        "بندها و مخازن",
+        "بند کجکی در ولایت هلمند افغانستان قرار دارد.",
+        "بند سد مخزن کجکی هلمند افغانستان"
     ),
+
     (
         "احمدشاه ابدالی",
-        "تاریخ",
-        "احمدشاه ابدالی بنیان‌گذار امپراتوری درانی بود."
+        "شاهان و فرمانروایان",
+        "احمدشاه ابدالی بنیان‌گذار امپراتوری درانی بود.",
+        "احمدشاه ابدالی شاه درانی تاریخ افغانستان"
     )
 ]
 
 
 def load_test_data():
 
-    for title, category, content in TEST_DATA:
+    for (
+        title,
+        category,
+        content,
+        keywords
+    ) in TEST_DATA:
 
         if not search_documents(title):
 
             add_document(
                 title,
                 category,
-                content
+                content,
+                keywords
             )
 
 
-# =========================
+# ==================================
 # وارد کردن GeoDAR
-# =========================
+# ==================================
 
 def load_reservoirs():
 
-    if not os.path.exists("reservoirs.json"):
-        print("reservoirs.json پیدا نشد.")
+    if not os.path.exists(
+        "reservoirs.json"
+    ):
+
+        print(
+            "reservoirs.json پیدا نشد."
+        )
+
         return
+
 
     with open(
         "reservoirs.json",
@@ -86,49 +119,138 @@ def load_reservoirs():
 
         data = json.load(file)
 
+
     count = 0
+
 
     for item in data:
 
-        if not search_documents(item["title"]):
+        title = item["title"]
+
+        # کلیدواژه‌های مربوط به بند و مخزن
+        keywords = (
+            "بند سد مخزن "
+            "reservoir dam "
+            "GeoDAR افغانستان"
+        )
+
+
+        if not search_documents(title):
 
             add_document(
-                item["title"],
+                title,
                 item["category"],
-                item["content"]
+                item["content"],
+                keywords
             )
 
             count += 1
+
 
     print(
         f"🏗 {count} رکورد GeoDAR وارد شد."
     )
 
 
-# =========================
-# شروع ربات
-# =========================
+# ==================================
+# دسته‌بندی
+# ==================================
+
+CATEGORIES = {
+
+    "جغرافیا": "جغرافیا",
+
+    "بند": "بندها و مخازن",
+
+    "سد": "بندها و مخازن",
+
+    "مخزن": "بندها و مخازن",
+
+    "کوه": "کوه‌ها",
+
+    "رود": "رودخانه‌ها",
+
+    "رودخانه": "رودخانه‌ها",
+
+    "شهر": "شهرها و روستاها",
+
+    "شاه": "شاهان و فرمانروایان",
+
+    "شاهان": "شاهان و فرمانروایان",
+
+    "جنگ": "جنگ‌ها",
+
+    "تاریخ": "تاریخ",
+
+    "حکومت": "حکومت‌ها"
+}
+
+
+# ==================================
+# /start
+# ==================================
 
 async def start(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
 ):
 
+    keyboard = [
+
+        [
+            InlineKeyboardButton(
+                "🗺 جغرافیا",
+                callback_data="cat_جغرافیا"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "🏗 بندها و مخازن",
+                callback_data="cat_بندها و مخازن"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "👑 شاهان",
+                callback_data="cat_شاهان و فرمانروایان"
+            )
+        ],
+
+        [
+            InlineKeyboardButton(
+                "📜 تاریخ",
+                callback_data="cat_تاریخ"
+            )
+        ]
+    ]
+
+
     await update.message.reply_text(
-        "🇦🇫 به ربات دانشنامه افغانستان خوش آمدید!\n\n"
-        "🔎 نام موضوع را برای جستجو بفرست.\n\n"
+
+        "🇦🇫 دانشنامه افغانستان\n\n"
+
+        "🔎 برای جستجو یک کلمه یا موضوع بفرست.\n\n"
+
         "مثال:\n"
-        "کابل\n"
-        "غزنی\n"
         "بند\n"
-        "مخزن\n"
-        "احمدشاه ابدالی"
+        "کابل\n"
+        "شاه\n"
+        "جنگ\n"
+        "تاریخ\n\n"
+
+        "یا یکی از دسته‌ها را انتخاب کن:",
+
+        reply_markup=InlineKeyboardMarkup(
+            keyboard
+        )
     )
 
 
-# =========================
+# ==================================
 # جستجو
-# =========================
+# ==================================
 
 async def search(
     update: Update,
@@ -140,64 +262,96 @@ async def search(
     if not query:
         return
 
-    results = search_documents(query)
+
+    # بررسی دسته
+    category = CATEGORIES.get(
+        query.lower()
+    )
+
+
+    results = search_documents(
+        query,
+        category
+    )
+
 
     if not results:
 
         await update.message.reply_text(
-            f"🔎 برای «{query}» چیزی پیدا نشد."
+
+            f"🔎 برای «{query}» چیزی پیدا نشد.\n\n"
+
+            "سعی کن با یک کلمه ساده‌تر جستجو کنی."
         )
 
         return
 
 
     message = (
-        f"🔎 نتایج جستجو برای:\n"
-        f"«{query}»\n\n"
+        f"🔎 نتایج برای «{query}»\n\n"
     )
 
 
     buttons = []
 
 
-    for i, result in enumerate(results, 1):
+    for i, result in enumerate(
+        results,
+        1
+    ):
 
-        _, title, category, content = result
+        _, title, category_name, content = result
+
 
         message += (
+
             f"📌 {i}. {title}\n"
-            f"📂 دسته: {category}\n"
-            f"📝 {content[:500]}\n\n"
+            f"📂 {category_name}\n"
+            f"📝 {content[:450]}\n\n"
         )
 
 
-        # پیدا کردن مختصات GeoDAR
+        # استخراج مختصات
         lat = None
         lon = None
 
+
         for line in content.splitlines():
 
-            if line.startswith("عرض جغرافیایی:"):
+            if line.startswith(
+                "عرض جغرافیایی:"
+            ):
 
-                lat = line.split(":", 1)[1].strip()
+                lat = line.split(
+                    ":",
+                    1
+                )[1].strip()
 
-            elif line.startswith("طول جغرافیایی:"):
 
-                lon = line.split(":", 1)[1].strip()
+            elif line.startswith(
+                "طول جغرافیایی:"
+            ):
+
+                lon = line.split(
+                    ":",
+                    1
+                )[1].strip()
 
 
-        # ساخت دکمه Google Maps
+        # Google Maps
         if lat and lon:
 
             maps_url = (
-                "https://www.google.com/maps/search/?api=1"
-                f"&query={lat},{lon}"
+                "https://www.google.com/maps/search/"
+                f"?api=1&query={lat},{lon}"
             )
 
+
             buttons.append(
+
                 [
                     InlineKeyboardButton(
-                        f"📍 {title}",
+                        "📍 مشاهده روی Google Maps",
                         url=maps_url
                     )
                 ]
@@ -213,20 +367,25 @@ async def search(
 
     keyboard = None
 
+
     if buttons:
 
-        keyboard = InlineKeyboardMarkup(buttons)
+        keyboard = InlineKeyboardMarkup(
+            buttons
+        )
 
 
     await update.message.reply_text(
+
         message,
+
         reply_markup=keyboard
     )
 
 
-# =========================
-# اجرای ربات
-# =========================
+# ==================================
+# اجرا
+# ==================================
 
 def main():
 
@@ -253,7 +412,8 @@ def main():
 
     app.add_handler(
         MessageHandler(
-            filters.TEXT & ~filters.COMMAND,
+            filters.TEXT
+            & ~filters.COMMAND,
             search
         )
     )
@@ -268,4 +428,5 @@ def main():
 
 
 if __name__ == "__main__":
+
     main()
