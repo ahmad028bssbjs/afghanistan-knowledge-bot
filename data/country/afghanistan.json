@@ -1,0 +1,19 @@
+{
+  "name": "Afghanistan",
+  "name_fa": "افغانستان",
+  "iso2": "AF",
+  "iso3": "AFG",
+  "capital": "Kabul",
+  "capital_fa": "کابل",
+  "continent": "Asia",
+  "region": "South Asia",
+  "currency": "Afghan afghani",
+  "currency_code": "AFN",
+  "official_languages": [
+    "Dari",
+    "Pashto"
+  ],
+  "administrative_level": "Country",
+  "provinces_count": 34,
+  "boundary_file": "../geography/afghanistan.geojson"
+}
