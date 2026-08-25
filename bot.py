@@ -360,13 +360,8 @@ async def show_district(
 
         return
 
-    lat = district.get(
-        "latitude"
-    )
-
-    lon = district.get(
-        "longitude"
-    )
+    lat = district.get("latitude")
+    lon = district.get("longitude")
 
     boundary_id = district.get(
         "boundary_id",
@@ -379,31 +374,22 @@ async def show_district(
     )
 
     text = (
-
         f"📍 {district['district_name_fa']}\n\n"
-
-        f"🏛 ولایت: "
-        f"{district['province_fa']}\n\n"
-
-        f"🇬🇧 نام انگلیسی: "
-        f"{district['district_name_en']}\n\n"
-
-        f"🆔 شناسه ولسوالی: "
-        f"{district['district_id']}\n\n"
-
+        f"🏛 ولایت: {district['province_fa']}\n\n"
+        f"🇬🇧 نام انگلیسی: {district['district_name_en']}\n\n"
+        f"🆔 شناسه ولسوالی: {district['district_id']}\n\n"
         f"📌 مرکز ولسوالی:\n"
         f"عرض: {lat}\n"
         f"طول: {lon}\n\n"
-
         f"🗺 مرز جغرافیایی:\n"
         f"{boundary_name}\n\n"
-
         f"🔗 Boundary ID:\n"
         f"{boundary_id}"
     )
 
     buttons = []
 
+    # 📍 مختصات واقعی ثبت‌شده
     if lat is not None and lon is not None:
 
         maps_url = (
@@ -412,47 +398,65 @@ async def show_district(
         )
 
         buttons.append([
-
             InlineKeyboardButton(
-                "📍 مشاهده مرکز روی نقشه",
+                "📍 مختصات جغرافیایی",
                 url=maps_url
             )
-
         ])
 
-    buttons.append([
+    # 🏙 جستجوی مرکز ولسوالی
+    from urllib.parse import quote
 
+    district_name = district.get(
+        "district_name_en",
+        ""
+    )
+
+    province_name = district.get(
+        "province_en",
+        ""
+    )
+
+    place_query = (
+        f"{district_name}, "
+        f"{province_name}, "
+        "Afghanistan"
+    )
+
+    center_url = (
+        "https://www.google.com/maps/search/"
+        f"?api=1&query={quote(place_query)}"
+    )
+
+    buttons.append([
+        InlineKeyboardButton(
+            "🏙️ جستجوی مرکز ولسوالی",
+            url=center_url
+        )
+    ])
+
+    # 🔙 برگشت به ولسوالی‌ها
+    buttons.append([
         InlineKeyboardButton(
             "🔙 برگشت به ولسوالی‌ها",
             callback_data=(
                 f"province:{district['province_id']}"
             )
         )
-
     ])
 
+    # 🔙 برگشت به ولایت‌ها
     buttons.append([
-
         InlineKeyboardButton(
-            "🇦🇫 برگشت به ولایت‌ها",
+            "🔙 برگشت به ولایت‌ها",
             callback_data="geo_provinces"
         )
-
     ])
 
     await query.edit_message_text(
-
         text,
-
-        reply_markup=InlineKeyboardMarkup(
-            buttons
-        )
+        reply_markup=InlineKeyboardMarkup(buttons)
     )
-
-
-# =========================================================
-# Callback Query
-# =========================================================
 
 async def button_handler(
     update: Update,
