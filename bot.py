@@ -22,10 +22,6 @@ if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN تنظیم نشده است.")
 
 
-# -------------------------
-# داده‌های آزمایشی
-# -------------------------
-
 TEST_DATA = [
     (
         "کابل",
@@ -68,10 +64,6 @@ def load_test_data():
             )
 
 
-# -------------------------
-# وارد کردن GeoDAR
-# -------------------------
-
 def load_reservoirs():
 
     if not os.path.exists("reservoirs.json"):
@@ -100,14 +92,8 @@ def load_reservoirs():
 
             count += 1
 
-    print(
-        f"🏗 {count} رکورد GeoDAR وارد شد."
-    )
+    print(f"🏗 {count} رکورد GeoDAR وارد شد.")
 
-
-# -------------------------
-# /start
-# -------------------------
 
 async def start(
     update: Update,
@@ -124,10 +110,6 @@ async def start(
         "احمدشاه ابدالی"
     )
 
-
-# -------------------------
-# جستجو
-# -------------------------
 
 async def search(
     update: Update,
@@ -151,11 +133,51 @@ async def search(
 
     message = f"🔎 نتایج برای «{query}»:\n\n"
 
-    for i, (_, title, category, content) in enumerate(
-        results,
-        1
-    ):
+    for i, result in enumerate(results, 1):
+
+        # نتیجه را باز می‌کنیم
+        _, title, category, content = result
 
         message += (
             f"📌 {i}. {title}\n"
-            f"📂 {category}\n"
+            f"📂 دسته: {category}\n"
+            f"📝 {content[:600]}\n\n"
+        )
+
+        if len(message) > 3500:
+            message += "..."
+            break
+
+    await update.message.reply_text(message)
+
+
+def main():
+
+    load_test_data()
+    load_reservoirs()
+
+    app = (
+        Application
+        .builder()
+        .token(BOT_TOKEN)
+        .build()
+    )
+
+    app.add_handler(
+        CommandHandler("start", start)
+    )
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            search
+        )
+    )
+
+    print("🇦🇫 Afghanistan Knowledge Bot is running...")
+
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
