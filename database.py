@@ -1,23 +1,25 @@
 import sqlite3
-import os
 
-DB_PATH = "afghanistan.db"
-
-
-def connect_db():
-    return sqlite3.connect(DB_PATH)
+DB_NAME = "afghanistan.db"
 
 
-def create_database():
-    conn = connect_db()
+def get_connection():
+    return sqlite3.connect(DB_NAME)
+
+
+def init_db():
+
+    conn = get_connection()
+
     cursor = conn.cursor()
 
     cursor.execute("""
         CREATE TABLE IF NOT EXISTS documents (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            title TEXT,
-            category TEXT,
-            content TEXT
+            title TEXT NOT NULL,
+            category TEXT NOT NULL,
+            content TEXT NOT NULL,
+            keywords TEXT DEFAULT ''
         )
     """)
 
@@ -25,38 +27,85 @@ def create_database():
     conn.close()
 
 
-def add_document(title, category, content):
-    conn = connect_db()
+def add_document(
+    title,
+    category,
+    content,
+    keywords=""
+):
+
+    conn = get_connection()
+
     cursor = conn.cursor()
 
     cursor.execute("""
-        INSERT INTO documents (title, category, content)
-        VALUES (?, ?, ?)
-    """, (title, category, content))
+        INSERT INTO documents
+        (title, category, content, keywords)
+        VALUES (?, ?, ?, ?)
+    """, (
+        title,
+        category,
+        content,
+        keywords
+    ))
 
     conn.commit()
     conn.close()
 
 
-def search_documents(query):
-    conn = connect_db()
+def search_documents(query, category=None):
+
+    conn = get_connection()
+
     cursor = conn.cursor()
 
-    search = f"%{query}%"
+    search_text = f"%{query}%"
 
-    cursor.execute("""
-        SELECT id, title, category, content
-        FROM documents
-        WHERE title LIKE ?
-           OR category LIKE ?
-           OR content LIKE ?
-        LIMIT 20
-    """, (search, search, search))
+    if category:
+
+        cursor.execute("""
+            SELECT id, title, category, content
+            FROM documents
+            WHERE
+                (
+                    title LIKE ?
+                    OR category LIKE ?
+                    OR content LIKE ?
+                    OR keywords LIKE ?
+                )
+                AND category = ?
+            LIMIT 50
+        """, (
+            search_text,
+            search_text,
+            search_text,
+            search_text,
+            category
+        ))
+
+    else:
+
+        cursor.execute("""
+            SELECT id, title, category, content
+            FROM documents
+            WHERE
+                title LIKE ?
+                OR category LIKE ?
+                OR content LIKE ?
+                OR keywords LIKE ?
+            LIMIT 50
+        """, (
+            search_text,
+            search_text,
+            search_text,
+            search_text
+        ))
 
     results = cursor.fetchall()
 
     conn.close()
+
     return results
 
 
-create_database()
+init_db()
