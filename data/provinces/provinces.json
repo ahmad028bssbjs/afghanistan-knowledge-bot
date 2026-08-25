@@ -1,0 +1,279 @@
+{
+  "country": "Afghanistan",
+  "country_iso": "AFG",
+  "count": 34,
+  "provinces": [
+    {
+      "name": "Kandahar",
+      "iso": "AF_KAN",
+      "shape_id": "12653393B40111500734429",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Zabul",
+      "iso": "AF-ZAB",
+      "shape_id": "12653393B56617740339660",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Uruzgan",
+      "iso": "AF-URU",
+      "shape_id": "12653393B46006342616872",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Daykundi",
+      "iso": "AF-DAY",
+      "shape_id": "12653393B78791504725813",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Ghanzi",
+      "iso": "AF-GHA",
+      "shape_id": "12653393B29313712249365",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Paktika",
+      "iso": "AF-PKA",
+      "shape_id": "12653393B93572570471663",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Khost",
+      "iso": "AF-KHO",
+      "shape_id": "12653393B66876919073955",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Paktia",
+      "iso": "AF-PIA",
+      "shape_id": "12653393B16859990709200",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Logar",
+      "iso": "AF-LOG",
+      "shape_id": "12653393B769191277822",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Wardak",
+      "iso": "AF-WAR",
+      "shape_id": "12653393B94990201402617",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Kabul",
+      "iso": "AF-KAB",
+      "shape_id": "12653393B60423242182357",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Nangarhar",
+      "iso": "AF-NAN",
+      "shape_id": "12653393B37348667052817",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Laghman",
+      "iso": "AF-LAG",
+      "shape_id": "12653393B74990608680346",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Kapisa",
+      "iso": "AF-KAP",
+      "shape_id": "12653393B3541911159736",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Parwan",
+      "iso": "AF-PAR",
+      "shape_id": "12653393B66863807863315",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Panjshir",
+      "iso": "AF-PAN",
+      "shape_id": "12653393B47875238778335",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Kunar",
+      "iso": "AF-KNR",
+      "shape_id": "12653393B2374338391952",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Nuristan",
+      "iso": "AF-NUR",
+      "shape_id": "12653393B50755551382850",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Baghlan",
+      "iso": "AF-BGL",
+      "shape_id": "12653393B95407416206470",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Bamyan",
+      "iso": "AF-BAM",
+      "shape_id": "12653393B40451261903281",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Samangan",
+      "iso": "AF-SAM",
+      "shape_id": "12653393B17428819721147",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Kunduz",
+      "iso": "AF-KDZ",
+      "shape_id": "12653393B86260556017558",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Takhar",
+      "iso": "AF-TAK",
+      "shape_id": "12653393B65816425001124",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Balkh",
+      "iso": "AF-BAL",
+      "shape_id": "12653393B32704257785092",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Sar-e Pol",
+      "iso": "AF-SAR",
+      "shape_id": "12653393B88420098597995",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Jowzjan",
+      "iso": "AF-JOW",
+      "shape_id": "12653393B68515507308334",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Faryab",
+      "iso": "AF-FYB",
+      "shape_id": "12653393B15327610512620",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Badghis",
+      "iso": "AF-BDG",
+      "shape_id": "12653393B49464330763444",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Ghor",
+      "iso": "AF-GHO",
+      "shape_id": "12653393B10656178064549",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Herat",
+      "iso": "AF-HER",
+      "shape_id": "12653393B41529784753429",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Farah",
+      "iso": "AF-FRA",
+      "shape_id": "12653393B38600812522696",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Nimruz",
+      "iso": "AF-NIM",
+      "shape_id": "12653393B2934199951965",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Helmand",
+      "iso": "AF-HEL",
+      "shape_id": "12653393B44617690613931",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    },
+    {
+      "name": "Badakhshan",
+      "iso": "AF-BDN",
+      "shape_id": "12653393B46637216309148",
+      "country": "Afghanistan",
+      "country_iso": "AFG",
+      "admin_level": 1
+    }
+  ]
+}
