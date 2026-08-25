@@ -2,7 +2,7 @@ import os
 import json
 import logging
 
-from telegram import Update
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import (
     Application,
     CommandHandler,
@@ -21,6 +21,10 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN تنظیم نشده است.")
 
+
+# =========================
+# داده‌های آزمایشی
+# =========================
 
 TEST_DATA = [
     (
@@ -64,6 +68,10 @@ def load_test_data():
             )
 
 
+# =========================
+# وارد کردن GeoDAR
+# =========================
+
 def load_reservoirs():
 
     if not os.path.exists("reservoirs.json"):
@@ -92,8 +100,14 @@ def load_reservoirs():
 
             count += 1
 
-    print(f"🏗 {count} رکورد GeoDAR وارد شد.")
+    print(
+        f"🏗 {count} رکورد GeoDAR وارد شد."
+    )
 
+
+# =========================
+# شروع ربات
+# =========================
 
 async def start(
     update: Update,
@@ -102,14 +116,19 @@ async def start(
 
     await update.message.reply_text(
         "🇦🇫 به ربات دانشنامه افغانستان خوش آمدید!\n\n"
-        "🔎 نام هر موضوع را برای جستجو بفرست.\n\n"
+        "🔎 نام موضوع را برای جستجو بفرست.\n\n"
         "مثال:\n"
         "کابل\n"
         "غزنی\n"
         "بند\n"
+        "مخزن\n"
         "احمدشاه ابدالی"
     )
 
+
+# =========================
+# جستجو
+# =========================
 
 async def search(
     update: Update,
@@ -131,30 +150,90 @@ async def search(
 
         return
 
-    message = f"🔎 نتایج برای «{query}»:\n\n"
+
+    message = (
+        f"🔎 نتایج جستجو برای:\n"
+        f"«{query}»\n\n"
+    )
+
+
+    buttons = []
+
 
     for i, result in enumerate(results, 1):
 
-        # نتیجه را باز می‌کنیم
         _, title, category, content = result
 
         message += (
             f"📌 {i}. {title}\n"
             f"📂 دسته: {category}\n"
-            f"📝 {content[:600]}\n\n"
+            f"📝 {content[:500]}\n\n"
         )
 
+
+        # پیدا کردن مختصات GeoDAR
+        lat = None
+        lon = None
+
+        for line in content.splitlines():
+
+            if line.startswith("عرض جغرافیایی:"):
+
+                lat = line.split(":", 1)[1].strip()
+
+            elif line.startswith("طول جغرافیایی:"):
+
+                lon = line.split(":", 1)[1].strip()
+
+
+        # ساخت دکمه Google Maps
+        if lat and lon:
+
+            maps_url = (
+                "https://www.google.com/maps/search/?api=1"
+                f"&query={lat},{lon}"
+            )
+
+            buttons.append(
+                [
+                    InlineKeyboardButton(
+                        f"📍 {title}",
+                        url=maps_url
+                    )
+                ]
+            )
+
+
         if len(message) > 3500:
+
             message += "..."
+
             break
 
-    await update.message.reply_text(message)
 
+    keyboard = None
+
+    if buttons:
+
+        keyboard = InlineKeyboardMarkup(buttons)
+
+
+    await update.message.reply_text(
+        message,
+        reply_markup=keyboard
+    )
+
+
+# =========================
+# اجرای ربات
+# =========================
 
 def main():
 
     load_test_data()
+
     load_reservoirs()
+
 
     app = (
         Application
@@ -163,9 +242,14 @@ def main():
         .build()
     )
 
+
     app.add_handler(
-        CommandHandler("start", start)
+        CommandHandler(
+            "start",
+            start
+        )
     )
+
 
     app.add_handler(
         MessageHandler(
@@ -174,7 +258,11 @@ def main():
         )
     )
 
-    print("🇦🇫 Afghanistan Knowledge Bot is running...")
+
+    print(
+        "🇦🇫 Afghanistan Knowledge Bot is running..."
+    )
+
 
     app.run_polling()
 
