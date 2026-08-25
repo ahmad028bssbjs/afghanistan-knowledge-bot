@@ -1,0 +1,455 @@
+{
+  "count": 45,
+  "cities": [
+    {
+      "name": "Kabul",
+      "latitude": 34.5328,
+      "longitude": 69.1658,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kābul",
+      "capital_type": "primary",
+      "population": 5333284
+    },
+    {
+      "name": "Kandahār",
+      "latitude": 31.6207,
+      "longitude": 65.7159,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kandahār",
+      "capital_type": "admin",
+      "population": 613462
+    },
+    {
+      "name": "Mazār-e Sharīf",
+      "latitude": 36.7,
+      "longitude": 67.1167,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Balkh",
+      "capital_type": "admin",
+      "population": 568013
+    },
+    {
+      "name": "Herāt",
+      "latitude": 34.3419,
+      "longitude": 62.2031,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Herāt",
+      "capital_type": "admin",
+      "population": 556205
+    },
+    {
+      "name": "Jalālābād",
+      "latitude": 34.4303,
+      "longitude": 70.4528,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Nangarhār",
+      "capital_type": "admin",
+      "population": 318733
+    },
+    {
+      "name": "Kunduz",
+      "latitude": 36.7289,
+      "longitude": 68.8569,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kunduz",
+      "capital_type": "admin",
+      "population": 221932
+    },
+    {
+      "name": "Pul-e Khumrī",
+      "latitude": 35.95,
+      "longitude": 68.7,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Baghlān",
+      "capital_type": "admin",
+      "population": 139252
+    },
+    {
+      "name": "Spīn Bōldak",
+      "latitude": 31.0081,
+      "longitude": 66.3981,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kandahār",
+      "capital_type": "minor",
+      "population": 123945
+    },
+    {
+      "name": "Maīmanah",
+      "latitude": 35.9333,
+      "longitude": 64.75,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Fāryāb",
+      "capital_type": "admin",
+      "population": 108049
+    },
+    {
+      "name": "Shibirghān",
+      "latitude": 36.665,
+      "longitude": 65.752,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Jowzjān",
+      "capital_type": "admin",
+      "population": 105393
+    },
+    {
+      "name": "Lashkar Gāh",
+      "latitude": 31.5938,
+      "longitude": 64.3716,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Helmand",
+      "capital_type": "admin",
+      "population": 100523
+    },
+    {
+      "name": "Tāluqān",
+      "latitude": 36.7358,
+      "longitude": 69.5347,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Takhār",
+      "capital_type": "admin",
+      "population": 94438
+    },
+    {
+      "name": "Baghlān",
+      "latitude": 36.1328,
+      "longitude": 68.7,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Baghlān",
+      "capital_type": "minor",
+      "population": 89625
+    },
+    {
+      "name": "Ghaznī",
+      "latitude": 33.5492,
+      "longitude": 68.4233,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Ghaznī",
+      "capital_type": "admin",
+      "population": 77675
+    },
+    {
+      "name": "Chārīkār",
+      "latitude": 35.0167,
+      "longitude": 69.1667,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Parwān",
+      "capital_type": "admin",
+      "population": 74189
+    },
+    {
+      "name": "Faīẕābād",
+      "latitude": 37.1166,
+      "longitude": 70.58,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Badakhshān",
+      "capital_type": "admin",
+      "population": 64704
+    },
+    {
+      "name": "Qalāt",
+      "latitude": 32.1061,
+      "longitude": 66.9069,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Zābul",
+      "capital_type": "admin",
+      "population": 49158
+    },
+    {
+      "name": "Paghmān",
+      "latitude": 34.5833,
+      "longitude": 68.95,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kābul",
+      "capital_type": null,
+      "population": 49157
+    },
+    {
+      "name": "Farāh",
+      "latitude": 32.3436,
+      "longitude": 62.1194,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Farāh",
+      "capital_type": "admin",
+      "population": 48132
+    },
+    {
+      "name": "Sar-e Pul",
+      "latitude": 36.2214,
+      "longitude": 65.9278,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Sar-e Pul",
+      "capital_type": "admin",
+      "population": 39668
+    },
+    {
+      "name": "Aībak",
+      "latitude": 36.2534,
+      "longitude": 68.0394,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Samangān",
+      "capital_type": "admin",
+      "population": 38174
+    },
+    {
+      "name": "Zaranj",
+      "latitude": 30.96,
+      "longitude": 61.86,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Nīmrōz",
+      "capital_type": "admin",
+      "population": 34190
+    },
+    {
+      "name": "Gardēz",
+      "latitude": 33.5931,
+      "longitude": 69.2297,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Paktiyā",
+      "capital_type": "admin",
+      "population": 31866
+    },
+    {
+      "name": "Bāzārak",
+      "latitude": 35.3131,
+      "longitude": 69.5153,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Panjshir",
+      "capital_type": "admin",
+      "population": 24723
+    },
+    {
+      "name": "Qal‘ah-ye Now",
+      "latitude": 34.9872,
+      "longitude": 63.1289,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Bādghīs",
+      "capital_type": "admin",
+      "population": 19087
+    },
+    {
+      "name": "Asadābād",
+      "latitude": 34.8742,
+      "longitude": 71.1528,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kunaṟ",
+      "capital_type": "admin",
+      "population": 17926
+    },
+    {
+      "name": "Bāmyān",
+      "latitude": 34.8167,
+      "longitude": 67.8167,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Bāmyān",
+      "capital_type": "admin",
+      "population": 16597
+    },
+    {
+      "name": "Khōst",
+      "latitude": 33.3333,
+      "longitude": 69.9167,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Khōst",
+      "capital_type": "admin",
+      "population": 15104
+    },
+    {
+      "name": "Pārūn",
+      "latitude": 35.4167,
+      "longitude": 70.9167,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Nūristān",
+      "capital_type": "admin",
+      "population": 11563
+    },
+    {
+      "name": "Fayrōz Kōh",
+      "latitude": 34.5225,
+      "longitude": 65.2517,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Ghōr",
+      "capital_type": "admin",
+      "population": 9128
+    },
+    {
+      "name": "Tarīn Kōṯ",
+      "latitude": 32.6242,
+      "longitude": 65.8767,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Uruzgān",
+      "capital_type": "admin",
+      "population": 8797
+    },
+    {
+      "name": "Pul-e ‘Alam",
+      "latitude": 33.9833,
+      "longitude": 69.0333,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Lōgar",
+      "capital_type": "admin",
+      "population": 7138
+    },
+    {
+      "name": "Mehtar Lām",
+      "latitude": 34.6683,
+      "longitude": 70.2089,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Laghmān",
+      "capital_type": "admin",
+      "population": 6638
+    },
+    {
+      "name": "Maīdān Shahr",
+      "latitude": 34.3972,
+      "longitude": 68.8697,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Wardak",
+      "capital_type": "admin",
+      "population": 3984
+    },
+    {
+      "name": "Maḩmūd-e Rāqī",
+      "latitude": 35.0206,
+      "longitude": 69.3306,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kāpīsā",
+      "capital_type": "admin",
+      "population": 1992
+    },
+    {
+      "name": "Sharan",
+      "latitude": 33.1757,
+      "longitude": 68.7304,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Paktīkā",
+      "capital_type": "admin",
+      "population": null
+    },
+    {
+      "name": "Nīlī",
+      "latitude": 33.7218,
+      "longitude": 66.1302,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Dāykundī",
+      "capital_type": "admin",
+      "population": null
+    },
+    {
+      "name": "Injīl",
+      "latitude": 34.3,
+      "longitude": 62.25,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Herāt",
+      "capital_type": "minor",
+      "population": null
+    },
+    {
+      "name": "Ibrāhīm Khān",
+      "latitude": 35.0535,
+      "longitude": 69.2565,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Parwān",
+      "capital_type": "minor",
+      "population": null
+    },
+    {
+      "name": "Mīr Bachah Kōṯ",
+      "latitude": 34.7467,
+      "longitude": 69.1164,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kābul",
+      "capital_type": "minor",
+      "population": null
+    },
+    {
+      "name": "Nādir Shāh Kōṯ",
+      "latitude": 34.2435,
+      "longitude": 70.7285,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Nangarhār",
+      "capital_type": "minor",
+      "population": null
+    },
+    {
+      "name": "Jabal us Sarāj",
+      "latitude": 35.1183,
+      "longitude": 69.2378,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Parwān",
+      "capital_type": "minor",
+      "population": null
+    },
+    {
+      "name": "Kalakān",
+      "latitude": 34.7808,
+      "longitude": 69.1486,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kābul",
+      "capital_type": "minor",
+      "population": null
+    },
+    {
+      "name": "Nādir Shāh Kōṯ",
+      "latitude": 33.3066,
+      "longitude": 69.6938,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Khōst",
+      "capital_type": "minor",
+      "population": null
+    },
+    {
+      "name": "Qarah Bāgh Bāzār",
+      "latitude": 34.8529,
+      "longitude": 69.1706,
+      "country": "Afghanistan",
+      "country_iso": "AF",
+      "province": "Kābul",
+      "capital_type": "minor",
+      "population": null
+    }
+  ]
+}
