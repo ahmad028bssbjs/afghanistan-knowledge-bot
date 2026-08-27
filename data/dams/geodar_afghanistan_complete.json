@@ -27,7 +27,15 @@
       "distance_to_province_center_km": 34.43,
       "district": "Andar",
       "distance_to_center_km": 34.43,
-      "dam_name": "Band-e Sarda"
+      "dam_name": "Band-e Sarda",
+      "dam_name_fa": "سد سرده",
+      "dam_name_en": "Band-e Sarda",
+      "description": "این سد در ولسوالی اندر در شرق ولایت غزنی و در نزدیکی مرز ولایت پکتیکا قرار دارد.",
+      "dam_type": "سد خاکی با هسته رسی",
+      "construction_year": 1967,
+      "river": "رودخانه گردیز",
+      "purpose": "مهار آب و ایجاد مخزن برای تأمین آب مورد نیاز کشاورزی در بخش‌هایی از جنوب غزنی.",
+      "power_capacity_mw": null
     },
     {
       "geodar_id": "2",
@@ -52,7 +60,15 @@
       "distance_to_province_center_km": 107.4,
       "district": "Kajaki",
       "distance_to_center_km": 107.4,
-      "dam_name": "Kajaki Dam"
+      "dam_name": "Kajaki Dam",
+      "dam_name_fa": "بند کجکی",
+      "dam_name_en": "Kajaki Dam",
+      "description": "این سد روی رودخانه هلمند (هیرمند) و در ولسوالی کجکی در شمال ولایت هلمند واقع شده است.",
+      "dam_type": "سد خاکی مرتفع",
+      "construction_year": 1953,
+      "river": "رودخانه هلمند (هیرمند)",
+      "purpose": "تولید برق‌آبی و تأمین آب برای آبیاری زمین‌های کشاورزی در هلمند و قندهار.",
+      "power_capacity_mw": null
     },
     {
       "geodar_id": "3",
@@ -77,7 +93,15 @@
       "distance_to_province_center_km": 54.58,
       "district": "Surobi",
       "distance_to_center_km": 54.58,
-      "dam_name": "Sarobi Dam"
+      "dam_name": "Sarobi Dam",
+      "dam_name_fa": "بند سروبی",
+      "dam_name_en": "Sarobi Dam",
+      "description": "این سد در ولسوالی سروبی در شرق ولایت کابل و بر روی رودخانه کابل ساخته شده است.",
+      "dam_type": null,
+      "construction_year": 1957,
+      "river": "رودخانه کابل",
+      "purpose": "تولید برق و کمک به تأمین برق کابل و مناطق اطراف.",
+      "power_capacity_mw": 22
     },
     {
       "geodar_id": "4",
@@ -102,7 +126,15 @@
       "distance_to_province_center_km": 10.2,
       "district": "Surkh Rod",
       "distance_to_center_km": 10.2,
-      "dam_name": "Darunta Dam"
+      "dam_name": "Darunta Dam",
+      "dam_name_fa": "بند درونته",
+      "dam_name_en": "Darunta Dam",
+      "description": "این سد در فاصله حدود ۷ کیلومتری غرب شهر جلال‌آباد، مرکز ولایت ننگرهار و بر روی رودخانه کابل ساخته شده است.",
+      "dam_type": null,
+      "construction_year": 1964,
+      "river": "رودخانه کابل",
+      "purpose": "تولید برق‌آبی، تأمین آب کشاورزی و کمک به آبیاری در ننگرهار.",
+      "power_capacity_mw": 11.5
     },
     {
       "geodar_id": "5",
@@ -127,7 +159,15 @@
       "distance_to_province_center_km": 29.67,
       "district": "Shah Wali Kot",
       "distance_to_center_km": 29.67,
-      "dam_name": "Dahla Dam"
+      "dam_name": "Dahla Dam",
+      "dam_name_fa": "بند دهله",
+      "dam_name_en": "Dahla Dam",
+      "description": "این سد در ولسوالی شاه ولی‌کوت در ولایت قندهار و بر روی رودخانه ارغنداب ساخته شده است.",
+      "dam_type": null,
+      "construction_year": 1952,
+      "river": "رودخانه ارغنداب",
+      "purpose": "مهار سیلاب‌ها و تأمین آب برای کانال‌های آبیاری، زمین‌های کشاورزی و باغات قندهار.",
+      "power_capacity_mw": null
     },
     {
       "geodar_id": "23506",
@@ -152,7 +192,15 @@
       "distance_to_province_center_km": 51.85,
       "district": "Surobi",
       "distance_to_center_km": 51.85,
-      "dam_name": "Naghlu Dam"
+      "dam_name": "Naghlu Dam",
+      "dam_name_fa": "بند نغلو",
+      "dam_name_en": "Naghlu Dam",
+      "description": "این سد در حدود ۴۰ کیلومتری شرق کابل و در ولسوالی سروبی ولایت کابل قرار دارد.",
+      "dam_type": "سد بتنی وزنی",
+      "construction_year": 1968,
+      "river": "رودخانه کابل و محل تلاقی با رودخانه پنجشیر",
+      "purpose": "تولید برق و تأمین برق کابل و مناطق اطراف.",
+      "power_capacity_mw": 100
     },
     {
       "geodar_id": "24517",
@@ -177,7 +225,15 @@
       "distance_to_province_center_km": 148.99,
       "district": "Chishti Sharif",
       "distance_to_center_km": 148.99,
-      "dam_name": "Salma Dam"
+      "dam_name": "Salma Dam",
+      "dam_name_fa": "بند سلما",
+      "dam_name_en": "Salma Dam",
+      "description": "این سد در ولسوالی چشت شریف در ولایت هرات و بر روی رودخانه هریرود ساخته شده است.",
+      "dam_type": "سد خاکی با هسته رسی",
+      "construction_year": 2016,
+      "river": "رودخانه هریرود",
+      "purpose": "تولید برق‌آبی و تأمین آب برای آبیاری زمین‌های کشاورزی در ولایت هرات.",
+      "power_capacity_mw": 42
     }
   ]
 }
