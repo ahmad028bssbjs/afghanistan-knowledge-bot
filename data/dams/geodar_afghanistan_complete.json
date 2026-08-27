@@ -26,7 +26,8 @@
       "province_center_longitude": 68.4233,
       "distance_to_province_center_km": 34.43,
       "district": "Andar",
-      "distance_to_center_km": 34.43
+      "distance_to_center_km": 34.43,
+      "dam_name": "Band-e Sarda"
     },
     {
       "geodar_id": "2",
@@ -50,7 +51,8 @@
       "province_center_longitude": 64.3716,
       "distance_to_province_center_km": 107.4,
       "district": "Kajaki",
-      "distance_to_center_km": 107.4
+      "distance_to_center_km": 107.4,
+      "dam_name": "Kajaki Dam"
     },
     {
       "geodar_id": "3",
@@ -74,7 +76,8 @@
       "province_center_longitude": 69.1658,
       "distance_to_province_center_km": 54.58,
       "district": "Surobi",
-      "distance_to_center_km": 54.58
+      "distance_to_center_km": 54.58,
+      "dam_name": "Sarobi Dam"
     },
     {
       "geodar_id": "4",
@@ -98,7 +101,8 @@
       "province_center_longitude": 70.4528,
       "distance_to_province_center_km": 10.2,
       "district": "Surkh Rod",
-      "distance_to_center_km": 10.2
+      "distance_to_center_km": 10.2,
+      "dam_name": "Darunta Dam"
     },
     {
       "geodar_id": "5",
@@ -122,7 +126,8 @@
       "province_center_longitude": 65.7159,
       "distance_to_province_center_km": 29.67,
       "district": "Shah Wali Kot",
-      "distance_to_center_km": 29.67
+      "distance_to_center_km": 29.67,
+      "dam_name": "Dahla Dam"
     },
     {
       "geodar_id": "23506",
@@ -146,7 +151,8 @@
       "province_center_longitude": 69.1658,
       "distance_to_province_center_km": 51.85,
       "district": "Surobi",
-      "distance_to_center_km": 51.85
+      "distance_to_center_km": 51.85,
+      "dam_name": "Naghlu Dam"
     },
     {
       "geodar_id": "24517",
@@ -170,7 +176,8 @@
       "province_center_longitude": 62.2031,
       "distance_to_province_center_km": 148.99,
       "district": "Chishti Sharif",
-      "distance_to_center_km": 148.99
+      "distance_to_center_km": 148.99,
+      "dam_name": "Salma Dam"
     }
   ]
 }
