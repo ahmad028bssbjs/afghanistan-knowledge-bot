@@ -887,4 +887,321 @@ async def button_handler(
         return
 
     # -----------------------------------------------------
-    # باز
+    # بازگشت Start
+    # -----------------------------------------------------
+
+    if data == "back_start":
+
+        keyboard = [
+
+            [
+                InlineKeyboardButton(
+                    "🇦🇫 جغرافیای افغانستان",
+                    callback_data="geo_provinces"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "🏗 بندها و سدها",
+                    callback_data="dams"
+                )
+            ],
+
+            [
+                InlineKeyboardButton(
+                    "💧 مخزن‌ها",
+                    callback_data="reservoirs"
+                )
+            ]
+
+        ]
+
+        await query.edit_message_text(
+
+            "🇦🇫 **دانشنامه افغانستان**\n\n"
+            "یک موضوع را انتخاب کن:",
+
+            reply_markup=InlineKeyboardMarkup(
+                keyboard
+            ),
+
+            parse_mode="Markdown"
+        )
+
+        return
+
+    # -----------------------------------------------------
+    # سدها
+    # -----------------------------------------------------
+
+    if data == "dams":
+
+        await show_dams(query)
+        return
+
+    # -----------------------------------------------------
+    # مخزن‌ها
+    # -----------------------------------------------------
+
+    if data == "reservoirs":
+
+        await query.edit_message_text(
+
+            "💧 **بخش مخزن‌ها**\n\n"
+
+            "این بخش را در مرحله بعد "
+            "کامل می‌کنیم.",
+
+            reply_markup=InlineKeyboardMarkup([
+
+                [
+                    InlineKeyboardButton(
+                        "🔙 بازگشت",
+                        callback_data="back_start"
+                    )
+                ]
+
+            ]),
+
+            parse_mode="Markdown"
+        )
+
+        return
+
+
+# =========================================================
+# جستجوی متنی
+# =========================================================
+
+async def search(
+    update: Update,
+    context: ContextTypes.DEFAULT_TYPE
+):
+
+    user_query = update.message.text.strip()
+
+    if not user_query:
+        return
+
+    query_lower = user_query.lower()
+
+    # =====================================================
+    # جستجوی سد
+    # =====================================================
+
+    dam_keywords = [
+        "بند",
+        "سد",
+        "dam",
+        "dams",
+        "kajaki",
+        "sarda",
+        "sarobi",
+        "darunta",
+        "dahla",
+        "naghlu",
+        "salma"
+    ]
+
+    is_dam_search = any(
+
+        word in query_lower
+
+        for word in dam_keywords
+
+    )
+
+    if is_dam_search:
+
+        if query_lower in [
+            "بند",
+            "سد",
+            "dam",
+            "dams"
+        ]:
+
+            results = DAMS
+
+        else:
+
+            results = search_dams(
+                user_query
+            )
+
+        if not results:
+
+            await update.message.reply_text(
+
+                "🔎 بندی با این جستجو پیدا نشد."
+            )
+
+            return
+
+        message = (
+            f"🏗 **نتایج بندها برای "
+            f"«{user_query}»**\n\n"
+        )
+
+        buttons = []
+
+        for index, dam in enumerate(
+            results[:20],
+            1
+        ):
+
+            message += (
+
+                dam_text(
+                    dam,
+                    index
+                )
+
+                + "\n\n"
+
+                + "━━━━━━━━━━━━━━\n\n"
+            )
+
+            map_button = dam_map_button(dam)
+
+            if map_button:
+
+                buttons.append([map_button])
+
+        if len(message) > 3900:
+
+            message = message[:3850]
+
+            message += "\n\n..."
+
+        await update.message.reply_text(
+
+            message,
+
+            reply_markup=(
+
+                InlineKeyboardMarkup(
+                    buttons
+                )
+
+                if buttons
+
+                else None
+            ),
+
+            parse_mode="Markdown"
+        )
+
+        return
+
+    # =====================================================
+    # جستجوی اطلاعات قبلی
+    # =====================================================
+
+    results = search_documents(
+        user_query
+    )
+
+    if not results:
+
+        await update.message.reply_text(
+
+            f"🔎 برای «{user_query}» "
+            "چیزی پیدا نشد."
+        )
+
+        return
+
+    message = (
+        f"🔎 **نتایج برای "
+        f"«{user_query}»**\n\n"
+    )
+
+    for i, result in enumerate(
+        results,
+        1
+    ):
+
+        _, title, category, content = result
+
+        message += (
+
+            f"📌 {i}. {title}\n"
+
+            f"📂 {category}\n"
+
+            f"📝 {content[:500]}\n\n"
+        )
+
+    await update.message.reply_text(
+
+        message[:4000],
+
+        parse_mode="Markdown"
+    )
+
+
+# =========================================================
+# اجرای ربات
+# =========================================================
+
+def main():
+
+    app = (
+        Application
+        .builder()
+        .token(BOT_TOKEN)
+        .build()
+    )
+
+    # /start
+
+    app.add_handler(
+
+        CommandHandler(
+            "start",
+            start
+        )
+    )
+
+    # دکمه‌ها
+
+    app.add_handler(
+
+        CallbackQueryHandler(
+            button_handler
+        )
+    )
+
+    # پیام‌های متنی
+
+    app.add_handler(
+
+        MessageHandler(
+
+            filters.TEXT
+            & ~filters.COMMAND,
+
+            search
+        )
+    )
+
+    print("=" * 60)
+    print("🇦🇫 Afghanistan Knowledge Bot")
+    print("✅ ربات در حال اجرا است...")
+    print(
+        f"🏗 تعداد سدهای بارگذاری‌شده: "
+        f"{len(DAMS)}"
+    )
+    print("=" * 60)
+
+    app.run_polling()
+
+
+# =========================================================
+# Main
+# =========================================================
+
+if __name__ == "__main__":
+
+    main()
