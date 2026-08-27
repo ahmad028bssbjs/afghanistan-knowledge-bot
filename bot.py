@@ -1,6 +1,8 @@
 import os
 import json
 import logging
+import threading
+from http.server import SimpleHTTPRequestHandler, HTTPServer
 from urllib.parse import quote
 
 from telegram import (
@@ -18,7 +20,7 @@ from telegram.ext import (
     filters
 )
 
-from database import search_documents, add_document
+from database import search_documents
 from geography import AfghanistanGeography
 
 
@@ -27,14 +29,56 @@ from geography import AfghanistanGeography
 # =========================================================
 
 logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    level=logging.INFO
 )
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 if not BOT_TOKEN:
     raise RuntimeError("BOT_TOKEN تنظیم نشده است.")
+
+
+# =========================================================
+# سرور HTTP برای Render
+# =========================================================
+
+class HealthHandler(SimpleHTTPRequestHandler):
+
+    def do_GET(self):
+        self.send_response(200)
+        self.send_header("Content-type", "text/plain; charset=utf-8")
+        self.end_headers()
+        self.wfile.write(
+            b"Afghanistan Knowledge Bot is running."
+        )
+
+    def log_message(self, format, *args):
+        pass
+
+
+def run_health_server():
+
+    port = int(
+        os.environ.get("PORT", "8080")
+    )
+
+    server = HTTPServer(
+        ("0.0.0.0", port),
+        HealthHandler
+    )
+
+    print("=" * 60)
+    print(f"🌐 Render HTTP server running on port {port}")
+    print("=" * 60)
+
+    server.serve_forever()
+
+
+threading.Thread(
+    target=run_health_server,
+    daemon=True
+).start()
 
 
 # =========================================================
@@ -45,40 +89,41 @@ GEO = AfghanistanGeography()
 
 
 # =========================================================
-# اطلاعات سدهای افغانستان
+# اطلاعات سدها
 # =========================================================
 
-DAMS_FILE = "data/dams/geodar_afghanistan_complete.json"
+DAM_FILE = (
+    "data/dams/"
+    "geodar_afghanistan_complete.json"
+)
 
 
 def load_dams():
 
-    if not os.path.exists(DAMS_FILE):
+    if not os.path.exists(DAM_FILE):
 
+        print("=" * 60)
         print("⚠️ فایل اطلاعات سدها پیدا نشد:")
-        print(DAMS_FILE)
+        print(DAM_FILE)
+        print("=" * 60)
 
         return []
 
     try:
 
         with open(
-            DAMS_FILE,
-            "r",
+            DAM_FILE,
             encoding="utf-8"
         ) as f:
 
             data = json.load(f)
 
-        # -------------------------------------------------
-        # فایل اصلی به شکل:
-        #
+        # فایل کامل شما ساختار:
         # {
-        #   "country": "Afghanistan",
-        #   "count": 7,
-        #   "dams": [...]
+        #   country: ...,
+        #   count: ...,
+        #   dams: [...]
         # }
-        # -------------------------------------------------
 
         if isinstance(data, dict):
 
@@ -90,19 +135,11 @@ def load_dams():
 
         else:
 
-            print("⚠️ ساختار فایل سدها نامعتبر است.")
-
-            return []
-
-        if not isinstance(dams, list):
-
-            print("⚠️ بخش dams یک لیست نیست.")
-
-            return []
+            dams = []
 
         print("=" * 60)
         print("✅ اطلاعات سدها بارگذاری شد")
-        print(f"فایل: {DAMS_FILE}")
+        print(f"فایل: {DAM_FILE}")
         print(f"تعداد سدها: {len(dams)}")
         print("=" * 60)
 
@@ -110,8 +147,10 @@ def load_dams():
 
     except Exception as e:
 
-        print("❌ خطا در خواندن فایل سدها:")
+        print("=" * 60)
+        print("❌ خطا در خواندن اطلاعات سدها")
         print(e)
+        print("=" * 60)
 
         return []
 
@@ -120,10 +159,29 @@ DAMS = load_dams()
 
 
 # =========================================================
-# ابزارهای کمکی سدها
+# نام سد
 # =========================================================
 
-def dam_id(dam):
+DAM_NAMES = {
+
+    "1": "Band-e Sarda",
+
+    "2": "Kajaki Dam",
+
+    "3": "Sarobi Dam",
+
+    "4": "Darunta Dam",
+
+    "5": "Dahla Dam",
+
+    "23506": "Naghlu Dam",
+
+    "24517": "Salma Dam"
+
+}
+
+
+def get_dam_id(dam):
 
     return str(
         dam.get(
@@ -132,422 +190,28 @@ def dam_id(dam):
                 "id_v11",
                 dam.get(
                     "OBJECTID",
-                    "?"
+                    ""
                 )
             )
         )
     )
 
 
-def dam_name(dam):
+def get_dam_name(dam):
 
-    return dam.get(
-        "dam_name",
-        f"سد GeoDAR #{dam_id(dam)}"
-    )
+    dam_id = get_dam_id(dam)
 
-
-def dam_lat(dam):
-
-    value = dam.get(
-        "latitude",
+    return DAM_NAMES.get(
+        dam_id,
         dam.get(
-            "lat",
-            ""
-        )
-    )
-
-    return value
-
-
-def dam_lon(dam):
-
-    value = dam.get(
-        "longitude",
-        dam.get(
-            "lon",
-            ""
-        )
-    )
-
-    return value
-
-
-def clean_value(value, default="ثبت نشده"):
-
-    if value is None:
-        return default
-
-    value = str(value).strip()
-
-    if value in (
-        "",
-        "-999",
-        "-999.0",
-        "-999.00"
-    ):
-        return default
-
-    return value
-
-
-# =========================================================
-# متن کامل اطلاعات سد
-# =========================================================
-
-def dam_text(dam, number=None):
-
-    d_id = dam_id(dam)
-
-    name = dam_name(dam)
-
-    province = clean_value(
-        dam.get("province")
-    )
-
-    district = clean_value(
-        dam.get("district")
-    )
-
-    center = clean_value(
-        dam.get("province_center")
-    )
-
-    distance = clean_value(
-        dam.get(
-            "distance_to_province_center_km"
-        ),
-        "ثبت نشده"
-    )
-
-    # پشتیبانی از نام‌های مختلف فیلد حجم
-    reservoir_volume = dam.get(
-        "reservoir_volume_mcm_v11",
-        dam.get(
-            "rv_mcm_v11",
-            dam.get(
-                "reservoir_volume_mcm_v10",
-                ""
-            )
-        )
-    )
-
-    reservoir_volume = clean_value(
-        reservoir_volume
-    )
-
-    geo_method = clean_value(
-        dam.get(
-            "geo_method",
-            dam.get(
-                "geo_mtd",
-                ""
-            )
-        )
-    )
-
-    qa_rank = clean_value(
-        dam.get("qa_rank")
-    )
-
-    grand_id = clean_value(
-        dam.get(
-            "grand_id",
-            dam.get(
-                "id_grd_v13",
-                ""
-            )
-        )
-    )
-
-    source = clean_value(
-        dam.get("source")
-    )
-
-    lat = dam_lat(dam)
-
-    lon = dam_lon(dam)
-
-    if number is None:
-
-        number = d_id
-
-    text = (
-        f"🔢 سد شماره {number}\n\n"
-
-        f"🏗 {name}\n\n"
-
-        f"🆔 GeoDAR ID: {d_id}\n\n"
-
-        f"🇦🇫 ولایت: {province}\n"
-        f"🏘 ولسوالی: {district}\n"
-        f"🏙 مرکز ولایت: {center}\n"
-        f"📏 فاصله تا مرکز: {distance} km\n\n"
-
-        f"📍 مختصات:\n"
-        f"عرض: {lat}\n"
-        f"طول: {lon}\n\n"
-
-        f"🆔 GRanD ID: {grand_id}\n\n"
-
-        f"🛰 روش تعیین موقعیت:\n"
-        f"{geo_method}\n\n"
-
-        f"✅ رتبه کیفیت: {qa_rank}\n\n"
-
-        f"💧 حجم مخزن:\n"
-        f"{reservoir_volume} MCM\n\n"
-
-        f"📚 منبع:\n"
-        f"{source}"
-    )
-
-    return text
-
-
-# =========================================================
-# دکمه‌های سدها
-# =========================================================
-
-def dam_buttons():
-
-    buttons = []
-
-    for index, dam in enumerate(DAMS, 1):
-
-        name = dam_name(dam)
-
-        lat = dam_lat(dam)
-        lon = dam_lon(dam)
-
-        # ---------------------------------------------
-        # دکمه مشاهده همان سد روی Google Maps
-        # ---------------------------------------------
-
-        if lat not in (
-            None,
-            ""
-        ) and lon not in (
-            None,
-            ""
-        ):
-
-            maps_url = (
-                "https://www.google.com/maps/search/"
-                f"?api=1&query={lat},{lon}"
-            )
-
-            buttons.append([
-
-                InlineKeyboardButton(
-                    f"📍 {name} — مشاهده روی نقشه",
-                    url=maps_url
-                )
-
-            ])
-
-        else:
-
-            buttons.append([
-
-                InlineKeyboardButton(
-                    f"🏗 {name}",
-                    callback_data=f"dam:{dam_id(dam)}"
-                )
-
-            ])
-
-    # ---------------------------------------------
-    # برگشت
-    # ---------------------------------------------
-
-    buttons.append([
-
-        InlineKeyboardButton(
-            "🔙 بازگشت",
-            callback_data="back_start"
-        )
-
-    ])
-
-    return buttons
-
-
-# =========================================================
-# نمایش فهرست سدها
-# =========================================================
-
-async def show_dams(query):
-
-    if not DAMS:
-
-        await query.edit_message_text(
-
-            "⚠️ اطلاعات سدها پیدا نشد.\n\n"
-            f"فایل مورد انتظار:\n{DAMS_FILE}",
-
-            reply_markup=InlineKeyboardMarkup([
-
-                [
-                    InlineKeyboardButton(
-                        "🔙 بازگشت",
-                        callback_data="back_start"
-                    )
-                ]
-
-            ])
-        )
-
-        return
-
-    text = (
-        "🏗 **بندها و سدهای افغانستان**\n\n"
-        f"تعداد سدهای ثبت‌شده: {len(DAMS)}\n\n"
-        "━━━━━━━━━━━━━━\n\n"
-    )
-
-    # فقط خلاصه؛ اطلاعات کامل با انتخاب سد
-    for index, dam in enumerate(DAMS, 1):
-
-        name = dam_name(dam)
-
-        province = clean_value(
-            dam.get("province")
-        )
-
-        district = clean_value(
-            dam.get("district")
-        )
-
-        text += (
-            f"🔢 {index}. **{name}**\n"
-            f"🇦🇫 ولایت: {province}\n"
-            f"🏘 ولسوالی: {district}\n\n"
-        )
-
-    text += (
-        "━━━━━━━━━━━━━━\n"
-        "📍 برای مشاهده هر سد روی نقشه، "
-        "دکمه مربوط به همان سد را انتخاب کن."
-    )
-
-    await query.edit_message_text(
-
-        text,
-
-        reply_markup=InlineKeyboardMarkup(
-            dam_buttons()
-        ),
-
-        parse_mode="Markdown"
-    )
-
-
-# =========================================================
-# نمایش اطلاعات یک سد
-# =========================================================
-
-async def show_single_dam(
-    query,
-    dam
-):
-
-    if not dam:
-
-        await query.answer(
-            "سد پیدا نشد.",
-            show_alert=True
-        )
-
-        return
-
-    # پیدا کردن شماره سد
-    number = 1
-
-    for index, item in enumerate(
-        DAMS,
-        1
-    ):
-
-        if dam_id(item) == dam_id(dam):
-
-            number = index
-            break
-
-    text = dam_text(
-        dam,
-        number
-    )
-
-    buttons = []
-
-    lat = dam_lat(dam)
-    lon = dam_lon(dam)
-
-    # ---------------------------------------------
-    # Google Maps
-    # ---------------------------------------------
-
-    if lat not in (
-        None,
-        ""
-    ) and lon not in (
-        None,
-        ""
-    ):
-
-        maps_url = (
-            "https://www.google.com/maps/search/"
-            f"?api=1&query={lat},{lon}"
-        )
-
-        buttons.append([
-
-            InlineKeyboardButton(
-                f"📍 مشاهده {dam_name(dam)} روی نقشه",
-                url=maps_url
-            )
-
-        ])
-
-    # ---------------------------------------------
-    # بازگشت به فهرست سدها
-    # ---------------------------------------------
-
-    buttons.append([
-
-        InlineKeyboardButton(
-            "🔙 برگشت به فهرست سدها",
-            callback_data="dams"
-        )
-
-    ])
-
-    # ---------------------------------------------
-    # بازگشت به Start
-    # ---------------------------------------------
-
-    buttons.append([
-
-        InlineKeyboardButton(
-            "🏠 منوی اصلی",
-            callback_data="back_start"
-        )
-
-    ])
-
-    await query.edit_message_text(
-
-        text,
-
-        reply_markup=InlineKeyboardMarkup(
-            buttons
+            "name",
+            f"Dam #{dam_id}"
         )
     )
 
 
 # =========================================================
-# جستجوی سدها
+# جستجوی سد
 # =========================================================
 
 def search_dams(query):
@@ -558,25 +222,192 @@ def search_dams(query):
 
     for dam in DAMS:
 
-        # نام سد را هم جداگانه وارد جستجو می‌کنیم
-        name = dam_name(dam)
+        name = get_dam_name(dam)
 
         text = " ".join(
             str(value)
             for value in dam.values()
         )
 
-        text = (
-            name
-            + " "
-            + text
-        ).lower()
+        text += " " + name
 
-        if query in text:
+        if query in text.lower():
 
             results.append(dam)
 
     return results
+
+
+# =========================================================
+# نمایش اطلاعات سد
+# =========================================================
+
+def dam_text(dam, number=None):
+
+    dam_id = get_dam_id(dam)
+
+    name = get_dam_name(dam)
+
+    province = dam.get(
+        "province",
+        "ثبت نشده"
+    )
+
+    district = dam.get(
+        "district",
+        "ثبت نشده"
+    )
+
+    center = dam.get(
+        "province_center",
+        "ثبت نشده"
+    )
+
+    distance = dam.get(
+        "distance_to_province_center_km",
+        "ثبت نشده"
+    )
+
+    lat = dam.get(
+        "latitude",
+        dam.get("lat", "")
+    )
+
+    lon = dam.get(
+        "longitude",
+        dam.get("lon", "")
+    )
+
+    grand_id = dam.get(
+        "grand_id",
+        dam.get(
+            "id_grd_v13",
+            "-999"
+        )
+    )
+
+    geo_method = dam.get(
+        "geo_method",
+        dam.get(
+            "geo_mtd",
+            ""
+        )
+    )
+
+    qa_rank = dam.get(
+        "qa_rank",
+        ""
+    )
+
+    volume = dam.get(
+        "reservoir_volume_mcm_v11",
+        dam.get(
+            "rv_mcm_v11",
+            ""
+        )
+    )
+
+    source = dam.get(
+        "source",
+        dam.get(
+            "harmonization_source",
+            ""
+        )
+    )
+
+    if grand_id in ("", "-999", "-999.0", None):
+        grand_id = "ثبت نشده"
+
+    if volume in ("", "-999", "-999.0", None):
+        volume = "ثبت نشده"
+
+    if not geo_method:
+        geo_method = "ثبت نشده"
+
+    if not qa_rank:
+        qa_rank = "ثبت نشده"
+
+    if not source:
+        source = "ثبت نشده"
+
+    title = ""
+
+    if number is not None:
+
+        title = (
+            f"🔢 سد شماره {number}\n\n"
+        )
+
+    text = (
+        title
+
+        + f"🏗 **{name}**\n\n"
+
+        + f"🆔 GeoDAR ID: `{dam_id}`\n\n"
+
+        + f"🇦🇫 ولایت: {province}\n"
+
+        + f"🏘 ولسوالی: {district}\n"
+
+        + f"🏙 مرکز ولایت: {center}\n"
+
+        + f"📏 فاصله تا مرکز: "
+        f"{distance} km\n\n"
+
+        + "📍 **مختصات:**\n"
+
+        + f"عرض: {lat}\n"
+
+        + f"طول: {lon}\n\n"
+
+        + f"🆔 GRanD ID: {grand_id}\n\n"
+
+        + "🛰 **روش تعیین موقعیت:**\n"
+
+        + f"{geo_method}\n\n"
+
+        + f"✅ **رتبه کیفیت:** {qa_rank}\n\n"
+
+        + "💧 **حجم مخزن:**\n"
+
+        + f"{volume} MCM\n\n"
+
+        + f"📚 **منبع:** {source}"
+    )
+
+    return text
+
+
+# =========================================================
+# دکمه‌های نقشه برای هر سد
+# =========================================================
+
+def dam_map_button(dam):
+
+    name = get_dam_name(dam)
+
+    lat = dam.get(
+        "latitude",
+        dam.get("lat")
+    )
+
+    lon = dam.get(
+        "longitude",
+        dam.get("lon")
+    )
+
+    if lat is None or lon is None:
+        return None
+
+    url = (
+        "https://www.google.com/maps/search/"
+        f"?api=1&query={lat},{lon}"
+    )
+
+    return InlineKeyboardButton(
+        f"📍 {name} روی نقشه",
+        url=url
+    )
 
 
 # =========================================================
@@ -615,9 +446,10 @@ async def start(
 
     await update.message.reply_text(
 
-        "🇦🇫 دانشنامه افغانستان\n\n"
+        "🇦🇫 **دانشنامه افغانستان**\n\n"
 
-        "یک موضوع را جستجو کن یا از منوی زیر استفاده کن.\n\n"
+        "یک موضوع را جستجو کن "
+        "یا از منوی زیر استفاده کن.\n\n"
 
         "مثال:\n"
         "بند\n"
@@ -627,7 +459,9 @@ async def start(
 
         reply_markup=InlineKeyboardMarkup(
             keyboard
-        )
+        ),
+
+        parse_mode="Markdown"
     )
 
 
@@ -659,11 +493,9 @@ async def show_provinces(query):
         if len(row) == 2:
 
             buttons.append(row)
-
             row = []
 
     if row:
-
         buttons.append(row)
 
     buttons.append([
@@ -689,7 +521,7 @@ async def show_provinces(query):
 
 
 # =========================================================
-# نمایش ولسوالی‌های یک ولایت
+# نمایش ولسوالی‌ها
 # =========================================================
 
 async def show_districts(
@@ -734,11 +566,9 @@ async def show_districts(
         if len(row) == 2:
 
             buttons.append(row)
-
             row = []
 
     if row:
-
         buttons.append(row)
 
     buttons.append([
@@ -753,7 +583,9 @@ async def show_districts(
     await query.edit_message_text(
 
         f"🇦🇫 ولایت {province['name_fa']}\n\n"
+
         f"تعداد ولسوالی‌ها: {len(districts)}\n\n"
+
         "یک ولسوالی را انتخاب کن:",
 
         reply_markup=InlineKeyboardMarkup(
@@ -763,7 +595,7 @@ async def show_districts(
 
 
 # =========================================================
-# نمایش اطلاعات ولسوالی
+# اطلاعات ولسوالی
 # =========================================================
 
 async def show_district(
@@ -798,9 +630,11 @@ async def show_district(
     )
 
     text = (
+
         f"📍 {district['district_name_fa']}\n\n"
 
-        f"🏛 ولایت: {district['province_fa']}\n\n"
+        f"🏛 ولایت: "
+        f"{district['province_fa']}\n\n"
 
         f"🇬🇧 نام انگلیسی: "
         f"{district['district_name_en']}\n\n"
@@ -821,7 +655,6 @@ async def show_district(
 
     buttons = []
 
-    # مختصات
     if lat is not None and lon is not None:
 
         maps_url = (
@@ -838,7 +671,6 @@ async def show_district(
 
         ])
 
-    # جستجوی مرکز ولسوالی
     district_name = district.get(
         "district_name_en",
         ""
@@ -900,160 +732,19 @@ async def show_district(
 
 
 # =========================================================
-# مدیریت دکمه‌ها
+# نمایش سدها
 # =========================================================
 
-async def button_handler(
-    update: Update,
-    context: ContextTypes.DEFAULT_TYPE
-):
+async def show_dams(query):
 
-    query = update.callback_query
-
-    await query.answer()
-
-    data = query.data
-
-    # =====================================================
-    # ولایت‌ها
-    # =====================================================
-
-    if data == "geo_provinces":
-
-        await show_provinces(
-            query
-        )
-
-        return
-
-    # =====================================================
-    # انتخاب ولایت
-    # =====================================================
-
-    if data.startswith("province:"):
-
-        province_id = data.split(
-            ":",
-            1
-        )[1]
-
-        await show_districts(
-            query,
-            province_id
-        )
-
-        return
-
-    # =====================================================
-    # انتخاب ولسوالی
-    # =====================================================
-
-    if data.startswith("district:"):
-
-        district_id = data.split(
-            ":",
-            1
-        )[1]
-
-        await show_district(
-            query,
-            district_id
-        )
-
-        return
-
-    # =====================================================
-    # انتخاب یک سد
-    # =====================================================
-
-    if data.startswith("dam:"):
-
-        selected_id = data.split(
-            ":",
-            1
-        )[1]
-
-        selected_dam = None
-
-        for dam in DAMS:
-
-            if dam_id(dam) == selected_id:
-
-                selected_dam = dam
-                break
-
-        await show_single_dam(
-            query,
-            selected_dam
-        )
-
-        return
-
-    # =====================================================
-    # بخش سدها
-    # =====================================================
-
-    if data == "dams":
-
-        await show_dams(
-            query
-        )
-
-        return
-
-    # =====================================================
-    # بازگشت به Start
-    # =====================================================
-
-    if data == "back_start":
-
-        keyboard = [
-
-            [
-                InlineKeyboardButton(
-                    "🇦🇫 جغرافیای افغانستان",
-                    callback_data="geo_provinces"
-                )
-            ],
-
-            [
-                InlineKeyboardButton(
-                    "🏗 بندها و سدها",
-                    callback_data="dams"
-                )
-            ],
-
-            [
-                InlineKeyboardButton(
-                    "💧 مخزن‌ها",
-                    callback_data="reservoirs"
-                )
-            ]
-
-        ]
+    if not DAMS:
 
         await query.edit_message_text(
 
-            "🇦🇫 دانشنامه افغانستان\n\n"
-            "یک موضوع را انتخاب کن:",
+            "⚠️ اطلاعات سدها پیدا نشد.\n\n"
 
-            reply_markup=InlineKeyboardMarkup(
-                keyboard
-            )
-        )
-
-        return
-
-    # =====================================================
-    # مخزن‌ها
-    # =====================================================
-
-    if data == "reservoirs":
-
-        await query.edit_message_text(
-
-            "💧 بخش مخزن‌ها\n\n"
-            "این بخش را در مرحله بعد کامل می‌کنیم.",
+            f"فایل مورد انتظار:\n"
+            f"{DAM_FILE}",
 
             reply_markup=InlineKeyboardMarkup([
 
@@ -1069,257 +760,131 @@ async def button_handler(
 
         return
 
+    message = (
+        "🏗 **بندها و سدهای افغانستان**\n\n"
+
+        f"تعداد سدهای ثبت‌شده: "
+        f"{len(DAMS)}\n\n"
+
+        "━━━━━━━━━━━━━━\n\n"
+    )
+
+    buttons = []
+
+    for index, dam in enumerate(
+        DAMS[:20],
+        1
+    ):
+
+        message += (
+            dam_text(
+                dam,
+                index
+            )
+
+            + "\n\n"
+
+            + "━━━━━━━━━━━━━━\n\n"
+        )
+
+        map_button = dam_map_button(dam)
+
+        if map_button:
+
+            buttons.append([map_button])
+
+    buttons.append([
+
+        InlineKeyboardButton(
+            "🔙 بازگشت",
+            callback_data="back_start"
+        )
+
+    ])
+
+    # تلگرام حدود 4096 کاراکتر قبول می‌کند
+    # برای اطمینان کمی پایین‌تر نگه می‌داریم.
+
+    if len(message) > 3900:
+
+        message = message[:3850]
+
+        message += (
+            "\n\n⚠️ ادامه اطلاعات "
+            "در نسخه بعدی صفحه‌بندی می‌شود."
+        )
+
+    await query.edit_message_text(
+
+        message,
+
+        reply_markup=InlineKeyboardMarkup(
+            buttons
+        ),
+
+        parse_mode="Markdown"
+    )
+
 
 # =========================================================
-# جستجوی متنی
+# دکمه‌ها
 # =========================================================
 
-async def search(
+async def button_handler(
     update: Update,
     context: ContextTypes.DEFAULT_TYPE
 ):
 
-    query = update.message.text.strip()
+    query = update.callback_query
 
-    if not query:
+    await query.answer()
 
+    data = query.data
+
+    # -----------------------------------------------------
+    # ولایت‌ها
+    # -----------------------------------------------------
+
+    if data == "geo_provinces":
+
+        await show_provinces(query)
         return
 
-    query_lower = query.lower()
+    # -----------------------------------------------------
+    # انتخاب ولایت
+    # -----------------------------------------------------
 
-    # =====================================================
-    # جستجوی سد
-    # =====================================================
+    if data.startswith("province:"):
 
-    dam_queries = [
-        "بند",
-        "سد",
-        "dam"
-    ]
-
-    is_dam_search = any(
-
-        word in query_lower
-
-        for word in dam_queries
-
-    )
-
-    if is_dam_search:
-
-        results = search_dams(
-            query
-        )
-
-        if query_lower in [
-            "بند",
-            "سد",
-            "dam"
-        ]:
-
-            results = DAMS
-
-        if not results:
-
-            await update.message.reply_text(
-
-                "🔎 بندی با این جستجو پیدا نشد."
-
-            )
-
-            return
-
-        message = (
-            f"🏗 نتایج بندها برای «{query}»\n\n"
-        )
-
-        buttons = []
-
-        for index, dam in enumerate(
-            results[:20],
+        province_id = data.split(
+            ":",
             1
-        ):
+        )[1]
 
-            name = dam_name(dam)
-
-            province = clean_value(
-                dam.get("province")
-            )
-
-            district = clean_value(
-                dam.get("district")
-            )
-
-            message += (
-
-                f"🔢 {index}. {name}\n"
-                f"🇦🇫 ولایت: {province}\n"
-                f"🏘 ولسوالی: {district}\n\n"
-
-            )
-
-            lat = dam_lat(dam)
-            lon = dam_lon(dam)
-
-            if lat not in (
-                None,
-                ""
-            ) and lon not in (
-                None,
-                ""
-            ):
-
-                maps_url = (
-                    "https://www.google.com/maps/search/"
-                    f"?api=1&query={lat},{lon}"
-                )
-
-                buttons.append([
-
-                    InlineKeyboardButton(
-                        f"📍 {name} — مشاهده روی نقشه",
-                        url=maps_url
-                    )
-
-                ])
-
-        await update.message.reply_text(
-
-            message[:4000],
-
-            reply_markup=(
-
-                InlineKeyboardMarkup(
-                    buttons
-                )
-
-                if buttons
-
-                else None
-
-            )
+        await show_districts(
+            query,
+            province_id
         )
 
         return
 
-    # =====================================================
-    # جستجوی اطلاعات قبلی
-    # =====================================================
+    # -----------------------------------------------------
+    # انتخاب ولسوالی
+    # -----------------------------------------------------
 
-    results = search_documents(
-        query
-    )
+    if data.startswith("district:"):
 
-    if not results:
+        district_id = data.split(
+            ":",
+            1
+        )[1]
 
-        await update.message.reply_text(
-
-            f"🔎 برای «{query}» چیزی پیدا نشد."
-
+        await show_district(
+            query,
+            district_id
         )
 
         return
 
-    message = (
-
-        f"🔎 نتایج برای «{query}»\n\n"
-
-    )
-
-    for i, result in enumerate(
-        results,
-        1
-    ):
-
-        _, title, category, content = result
-
-        message += (
-
-            f"📌 {i}. {title}\n"
-            f"📂 {category}\n"
-            f"📝 {content[:500]}\n\n"
-
-        )
-
-    await update.message.reply_text(
-
-        message[:4000]
-
-    )
-
-
-# =========================================================
-# اجرای ربات
-# =========================================================
-
-def main():
-
-    app = (
-
-        Application
-
-        .builder()
-
-        .token(BOT_TOKEN)
-
-        .build()
-
-    )
-
     # -----------------------------------------------------
-    # /start
-    # -----------------------------------------------------
-
-    app.add_handler(
-
-        CommandHandler(
-            "start",
-            start
-        )
-
-    )
-
-    # -----------------------------------------------------
-    # دکمه‌های Inline
-    # -----------------------------------------------------
-
-    app.add_handler(
-
-        CallbackQueryHandler(
-            button_handler
-        )
-
-    )
-
-    # -----------------------------------------------------
-    # پیام‌های متنی
-    # -----------------------------------------------------
-
-    app.add_handler(
-
-        MessageHandler(
-
-            filters.TEXT & ~filters.COMMAND,
-
-            search
-
-        )
-
-    )
-
-    print("=" * 60)
-    print("🇦🇫 Afghanistan Knowledge Bot")
-    print("✅ ربات در حال اجرا است...")
-    print(f"🏗 تعداد سدهای بارگذاری‌شده: {len(DAMS)}")
-    print("=" * 60)
-
-    app.run_polling()
-
-
-# =========================================================
-# Main
-# =========================================================
-
-if __name__ == "__main__":
-
-    main()
+    # باز
