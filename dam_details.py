@@ -3,6 +3,10 @@
 # اطلاعات و مشخصات سدهای افغانستان
 # =========================================================
 
+import json
+import math
+from pathlib import Path
+
 
 # =========================================================
 # تبدیل مقدار خالی
@@ -16,7 +20,6 @@ def clean_value(value, default="ثبت نشده"):
     if value is None:
         return default
 
-    # اگر لیست یا دیکشنری بود
     if isinstance(value, (list, dict)):
         if not value:
             return default
@@ -46,9 +49,6 @@ def clean_value(value, default="ثبت نشده"):
 # =========================================================
 
 def get_dam_name_fa(dam):
-    """
-    نام فارسی سد را از JSON استخراج می‌کند.
-    """
 
     if not isinstance(dam, dict):
         return "سد بدون نام"
@@ -71,9 +71,6 @@ def get_dam_name_fa(dam):
 # =========================================================
 
 def get_dam_name_en(dam):
-    """
-    نام انگلیسی سد را از JSON استخراج می‌کند.
-    """
 
     if not isinstance(dam, dict):
         return ""
@@ -100,13 +97,6 @@ def get_dam_name_en(dam):
 # =========================================================
 
 def get_coordinates(dam):
-    """
-    مختصات سد را با پشتیبانی از چند نام احتمالی فیلدها
-    از اطلاعات JSON استخراج می‌کند.
-
-    خروجی:
-        (latitude, longitude)
-    """
 
     if not isinstance(dam, dict):
         return None, None
@@ -128,7 +118,7 @@ def get_coordinates(dam):
     )
 
     # -----------------------------------------------------
-    # اگر مختصات داخل یک فیلد coordinates باشد
+    # coordinates
     # -----------------------------------------------------
 
     if (
@@ -145,8 +135,9 @@ def get_coordinates(dam):
             (list, tuple)
         ):
 
-            # معمولاً GeoJSON به شکل [longitude, latitude]
             if len(coordinates) >= 2:
+
+                # GeoJSON = [longitude, latitude]
 
                 longitude = coordinates[0]
                 latitude = coordinates[1]
@@ -198,7 +189,7 @@ def get_coordinates(dam):
         longitude = None
 
     # -----------------------------------------------------
-    # بررسی محدوده مختصات
+    # بررسی محدوده
     # -----------------------------------------------------
 
     if latitude is not None:
@@ -219,9 +210,6 @@ def get_coordinates(dam):
 # =========================================================
 
 def get_status_fa(status):
-    """
-    تبدیل وضعیت انگلیسی به فارسی.
-    """
 
     status = clean_value(
         status
@@ -261,6 +249,374 @@ def get_status_fa(status):
 
 
 # =========================================================
+# خواندن مراکز ولایت‌ها
+# =========================================================
+
+def load_province_centers():
+
+    possible_paths = [
+
+        Path(
+            "data/provinces/province_centers.json"
+        ),
+
+        Path(__file__).parent / (
+            "data/provinces/province_centers.json"
+        ),
+    ]
+
+    for path in possible_paths:
+
+        try:
+
+            if not path.exists():
+                continue
+
+            with open(
+                path,
+                "r",
+                encoding="utf-8"
+            ) as f:
+
+                data = json.load(f)
+
+            centers = data.get(
+                "province_centers",
+                []
+            )
+
+            if isinstance(
+                centers,
+                list
+            ):
+
+                print(
+                    f"✅ مراکز ولایت‌ها بارگذاری شد: "
+                    f"{len(centers)} ولایت"
+                )
+
+                return centers
+
+        except Exception as e:
+
+            print(
+                "⚠️ خطا در خواندن "
+                "province_centers.json:"
+            )
+
+            print(e)
+
+    print(
+        "⚠️ فایل province_centers.json پیدا نشد."
+    )
+
+    return []
+
+
+PROVINCE_CENTERS = load_province_centers()
+
+
+# =========================================================
+# یکسان‌سازی نام ولایت‌ها
+# =========================================================
+
+PROVINCE_ALIASES = {
+
+    "کابل": "Kabul",
+    "Kabul": "Kabul",
+
+    "قندهار": "Kandahār",
+    "Kandahar": "Kandahār",
+    "Kandahār": "Kandahār",
+
+    "بلخ": "Balkh",
+    "Balkh": "Balkh",
+
+    "هرات": "Herāt",
+    "Herat": "Herāt",
+    "Herāt": "Herāt",
+
+    "ننگرهار": "Nangarhār",
+    "Nangarhar": "Nangarhār",
+    "Nangarhār": "Nangarhār",
+
+    "قندوز": "Kunduz",
+    "Kunduz": "Kunduz",
+
+    "بغلان": "Baghlān",
+    "Baghlan": "Baghlān",
+    "Baghlān": "Baghlān",
+
+    "فاریاب": "Fāryāb",
+    "Faryab": "Fāryāb",
+    "Fāryāb": "Fāryāb",
+
+    "جوزجان": "Jowzjān",
+    "Jowzjan": "Jowzjān",
+    "Jowzjān": "Jowzjān",
+
+    "هلمند": "Helmand",
+    "Helmand": "Helmand",
+
+    "تخار": "Takhār",
+    "Takhar": "Takhār",
+    "Takhār": "Takhār",
+
+    "غزنی": "Ghaznī",
+    "Ghazni": "Ghaznī",
+    "Ghaznī": "Ghaznī",
+
+    "پروان": "Parwān",
+    "Parwan": "Parwān",
+    "Parwān": "Parwān",
+
+    "بدخشان": "Badakhshān",
+    "Badakhshan": "Badakhshān",
+    "Badakhshān": "Badakhshān",
+
+    "زابل": "Zābul",
+    "Zabul": "Zābul",
+    "Zābul": "Zābul",
+
+    "فراه": "Farāh",
+    "Farah": "Farāh",
+    "Farāh": "Farāh",
+
+    "سرپل": "Sar-e Pul",
+    "Sar-e Pul": "Sar-e Pul",
+
+    "سمنگان": "Samangān",
+    "Samangan": "Samangān",
+    "Samangān": "Samangān",
+
+    "نیمروز": "Nīmrōz",
+    "Nimroz": "Nīmrōz",
+    "Nīmrōz": "Nīmrōz",
+
+    "پکتیا": "Paktiyā",
+    "Paktia": "Paktiyā",
+    "Paktiyā": "Paktiyā",
+
+    "پنجشیر": "Panjshir",
+    "Panjshir": "Panjshir",
+
+    "بادغیس": "Bādghīs",
+    "بدغیس": "Bādghīs",
+    "Badghis": "Bādghīs",
+    "Bādghīs": "Bādghīs",
+
+    "کنر": "Kunaṟ",
+    "Kunar": "Kunaṟ",
+    "Kunaṟ": "Kunaṟ",
+
+    "لغمان": "Laghmān",
+    "Laghman": "Laghmān",
+    "Laghmān": "Laghmān",
+
+    "نورستان": "Nūristān",
+    "Nuristan": "Nūristān",
+    "Nūristān": "Nūristān",
+
+    "بامیان": "Bāmyān",
+    "Bamyan": "Bāmyān",
+    "Bāmyān": "Bāmyān",
+
+    "دایکندی": "Dāykundī",
+    "Daykundi": "Dāykundī",
+    "Dāykundī": "Dāykundī",
+
+    "غور": "Ghōr",
+    "Ghor": "Ghōr",
+    "Ghōr": "Ghōr",
+
+    "ارزگان": "Uruzgān",
+    "Uruzgan": "Uruzgān",
+    "Uruzgān": "Uruzgān",
+
+    "لوگر": "Lōgar",
+    "Logar": "Lōgar",
+    "Lōgar": "Lōgar",
+
+    "میدان وردک": "Wardak",
+    "وردک": "Wardak",
+    "Wardak": "Wardak",
+
+    "کاپیسا": "Kāpīsā",
+    "Kapisa": "Kāpīsā",
+    "Kāpīsā": "Kāpīsā",
+
+    "پکتیکا": "Paktīkā",
+    "Paktika": "Paktīkā",
+    "Paktīkā": "Paktīkā",
+
+    "خوست": "Khōst",
+    "Khost": "Khōst",
+    "Khōst": "Khōst",
+}
+
+
+# =========================================================
+# پیدا کردن مرکز ولایت
+# =========================================================
+
+def get_province_center(province):
+
+    if not province:
+        return None
+
+    province = str(
+        province
+    ).strip()
+
+    normalized = PROVINCE_ALIASES.get(
+        province,
+        province
+    )
+
+    # تطبیق province_en
+    for center in PROVINCE_CENTERS:
+
+        center_province = str(
+            center.get("province_en", "")
+        ).strip()
+
+        if center_province == normalized:
+            return center
+
+    # تطبیق بدون توجه به حروف بزرگ و کوچک
+    for center in PROVINCE_CENTERS:
+
+        center_province = str(
+            center.get("province_en", "")
+        ).strip()
+
+        if (
+            center_province.lower()
+            == province.lower()
+        ):
+
+            return center
+
+    return None
+
+
+# =========================================================
+# محاسبه فاصله Haversine
+# =========================================================
+
+def calculate_distance_km(
+    lat1,
+    lon1,
+    lat2,
+    lon2
+):
+
+    try:
+
+        lat1 = float(lat1)
+        lon1 = float(lon1)
+        lat2 = float(lat2)
+        lon2 = float(lon2)
+
+    except (
+        ValueError,
+        TypeError
+    ):
+
+        return None
+
+    earth_radius_km = 6371.0088
+
+    lat1_rad = math.radians(
+        lat1
+    )
+
+    lat2_rad = math.radians(
+        lat2
+    )
+
+    delta_lat = math.radians(
+        lat2 - lat1
+    )
+
+    delta_lon = math.radians(
+        lon2 - lon1
+    )
+
+    a = (
+        math.sin(delta_lat / 2) ** 2
+        +
+        math.cos(lat1_rad)
+        *
+        math.cos(lat2_rad)
+        *
+        math.sin(delta_lon / 2) ** 2
+    )
+
+    c = 2 * math.atan2(
+        math.sqrt(a),
+        math.sqrt(1 - a)
+    )
+
+    return earth_radius_km * c
+
+
+# =========================================================
+# دریافت مرکز ولایت و فاصله
+# =========================================================
+
+def get_province_center_info(
+    province,
+    latitude,
+    longitude
+):
+
+    center = get_province_center(
+        province
+    )
+
+    if center is None:
+
+        return (
+            "ثبت نشده",
+            None
+        )
+
+    center_name = center.get(
+        "name_en"
+    )
+
+    center_lat = center.get(
+        "latitude"
+    )
+
+    center_lon = center.get(
+        "longitude"
+    )
+
+    distance = calculate_distance_km(
+        latitude,
+        longitude,
+        center_lat,
+        center_lon
+    )
+
+    if distance is not None:
+
+        distance = round(
+            distance,
+            1
+        )
+
+    return (
+        clean_value(
+            center_name
+        ),
+        distance
+    )
+
+
+# =========================================================
 # ساخت متن کامل اطلاعات سد
 # =========================================================
 
@@ -268,9 +624,6 @@ def build_dam_text(
     dam,
     number=None
 ):
-    """
-    اطلاعات کامل یک سد را برای نمایش در تلگرام می‌سازد.
-    """
 
     if not isinstance(dam, dict):
 
@@ -335,22 +688,27 @@ def build_dam_text(
     )
 
     # -----------------------------------------------------
-    # مرکز ولایت
+    # مرکز ولایت و فاصله
     # -----------------------------------------------------
 
-    province_center = clean_value(
-        dam.get("province_center")
-        or dam.get("province_center_name")
-    )
-
-    distance = clean_value(
-        dam.get(
-            "distance_to_province_center_km"
+    province_center, calculated_distance = (
+        get_province_center_info(
+            province,
+            latitude,
+            longitude
         )
     )
 
+    if calculated_distance is not None:
+
+        distance = f"{calculated_distance:.1f}"
+
+    else:
+
+        distance = "ثبت نشده"
+
     # -----------------------------------------------------
-    # اطلاعات جغرافیایی / کیفیت
+    # اطلاعات جغرافیایی
     # -----------------------------------------------------
 
     geo_method = clean_value(
