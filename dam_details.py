@@ -5,7 +5,20 @@
 
 import json
 import math
+import unicodedata
 from pathlib import Path
+
+
+# =========================================================
+# تنظیمات
+# =========================================================
+
+PROVINCE_CENTERS_FILE = (
+    Path(__file__).parent
+    / "data"
+    / "provinces"
+    / "province_centers.json"
+)
 
 
 # =========================================================
@@ -13,10 +26,6 @@ from pathlib import Path
 # =========================================================
 
 def clean_value(value, default="ثبت نشده"):
-    """
-    مقدارهای خالی یا نامعتبر را به مقدار قابل نمایش تبدیل می‌کند.
-    """
-
     if value is None:
         return default
 
@@ -103,19 +112,29 @@ def get_coordinates(dam):
 
     latitude = (
         dam.get("latitude")
-        or dam.get("lat")
-        or dam.get("Latitude")
-        or dam.get("LAT")
+        if dam.get("latitude") is not None
+        else dam.get("lat")
     )
+
+    if latitude is None:
+        latitude = (
+            dam.get("Latitude")
+            or dam.get("LAT")
+        )
 
     longitude = (
         dam.get("longitude")
-        or dam.get("lon")
-        or dam.get("lng")
-        or dam.get("Longitude")
-        or dam.get("LON")
-        or dam.get("LONG")
+        if dam.get("longitude") is not None
+        else dam.get("lon")
     )
+
+    if longitude is None:
+        longitude = (
+            dam.get("lng")
+            or dam.get("Longitude")
+            or dam.get("LON")
+            or dam.get("LONG")
+        )
 
     # -----------------------------------------------------
     # coordinates
@@ -137,7 +156,8 @@ def get_coordinates(dam):
 
             if len(coordinates) >= 2:
 
-                # GeoJSON = [longitude, latitude]
+                # GeoJSON:
+                # [longitude, latitude]
 
                 longitude = coordinates[0]
                 latitude = coordinates[1]
@@ -246,25 +266,13 @@ def get_status_fa(status):
         status,
         status
     )
+
+
 # =========================================================
 # نرمال‌سازی نام ولایت
 # =========================================================
 
-import unicodedata
-
-
 def normalize_province_name(name):
-    """
-    تبدیل نام فارسی/انگلیسی ولایت به یک کلید استاندارد.
-
-    این تابع حروف دارای علامت مانند:
-        Kābul -> Kabul
-        Kandahār -> Kandahar
-        Nangarhār -> Nangarhar
-        Fāryāb -> Faryab
-
-    را نیز پشتیبانی می‌کند.
-    """
 
     if name is None:
         return ""
@@ -279,6 +287,7 @@ def normalize_province_name(name):
     # -----------------------------------------------------
 
     persian_names = {
+
         "کابل": "Kabul",
         "قندهار": "Kandahar",
         "هرات": "Herat",
@@ -292,6 +301,7 @@ def normalize_province_name(name):
         "کاپیسا": "Kapisa",
         "لوگر": "Logar",
         "میدان وردک": "Wardak",
+        "میدان‌وردک": "Wardak",
         "وردک": "Wardak",
         "هلمند": "Helmand",
         "زابل": "Zabul",
@@ -302,6 +312,7 @@ def normalize_province_name(name):
         "پکتیا": "Paktia",
         "پنجشیر": "Panjshir",
         "بادغیس": "Badghis",
+        "بدغیس": "Badghis",
         "کنر": "Kunar",
         "بامیان": "Bamyan",
         "خوست": "Khost",
@@ -314,7 +325,6 @@ def normalize_province_name(name):
         "کندز": "Kunduz",
         "بلخ": "Balkh",
         "جوزجان": "Jowzjan",
-        "سرپل": "Sar-e Pul",
     }
 
     if name in persian_names:
@@ -322,11 +332,6 @@ def normalize_province_name(name):
 
     # -----------------------------------------------------
     # نرمال‌سازی Unicode
-    # حذف علامت‌های روی حروف:
-    #
-    # Kābul     -> Kabul
-    # Kandahār  -> Kandahar
-    # Fāryāb    -> Faryab
     # -----------------------------------------------------
 
     normalized = unicodedata.normalize(
@@ -340,19 +345,24 @@ def normalize_province_name(name):
         if not unicodedata.combining(char)
     )
 
-    # -----------------------------------------------------
-    # یکسان‌سازی فاصله
-    # -----------------------------------------------------
+    normalized = (
+        normalized
+        .replace("’", "'")
+        .replace("‘", "'")
+        .replace("–", "-")
+        .replace("—", "-")
+    )
 
     normalized = " ".join(
         normalized.split()
     )
 
     # -----------------------------------------------------
-    # نام‌های انگلیسی استاندارد
+    # یکسان‌سازی نام‌های انگلیسی
     # -----------------------------------------------------
 
     english_names = {
+
         "Kabul": "Kabul",
         "Kandahar": "Kandahar",
         "Herat": "Herat",
@@ -370,6 +380,7 @@ def normalize_province_name(name):
         "Zabul": "Zabul",
         "Farah": "Farah",
         "Sar-e Pul": "Sar-e Pul",
+        "Sar e Pul": "Sar-e Pul",
         "Samangan": "Samangan",
         "Nimroz": "Nimroz",
         "Paktia": "Paktia",
@@ -395,169 +406,218 @@ def normalize_province_name(name):
     )
 
 
-                print(
-                    f"✅ مراکز ولایت‌ها بارگذاری شد: "
-                    f"{len(centers)} ولایت"
-                )
+# =========================================================
+# نام فارسی مراکز ولایت
+# =========================================================
 
-                return centers
+PROVINCE_CENTER_FA = {
 
-        except Exception as e:
+    "Kabul": "کابل",
+    "Kandahar": "قندهار",
+    "Balkh": "مزار شریف",
+    "Herat": "هرات",
+    "Nangarhar": "جلال‌آباد",
+    "Kunduz": "قندوز",
+    "Baghlan": "پلخمری",
+    "Faryab": "میمنه",
+    "Jowzjan": "شبرغان",
+    "Helmand": "لشکرگاه",
+    "Takhar": "تالقان",
+    "Ghazni": "غزنی",
+    "Parwan": "چاریکار",
+    "Badakhshan": "فیض‌آباد",
+    "Zabul": "قلات",
+    "Farah": "فراه",
+    "Sar-e Pul": "سرپل",
+    "Samangan": "ایبک",
+    "Nimroz": "زرنج",
+    "Paktia": "گردیز",
+    "Panjshir": "بازارک",
+    "Badghis": "قلعه نو",
+    "Kunar": "اسعدآباد",
+    "Bamyan": "بامیان",
+    "Khost": "خوست",
+    "Nuristan": "پارون",
+    "Ghor": "فیروزکوه",
+    "Uruzgan": "ترینکوت",
+    "Logar": "پل علم",
+    "Laghman": "مهترلام",
+    "Wardak": "میدان‌شهر",
+    "Kapisa": "محمود راقی",
+    "Paktika": "شرنه",
+    "Daykundi": "نیلی",
+}
 
-            print(
-                "⚠️ خطا در خواندن "
-                "province_centers.json:"
+
+# =========================================================
+# بارگذاری مراکز ولایات
+# =========================================================
+
+def load_province_centers():
+
+    if not PROVINCE_CENTERS_FILE.exists():
+
+        print(
+            "⚠️ فایل مراکز ولایات پیدا نشد:"
+        )
+
+        print(
+            PROVINCE_CENTERS_FILE
+        )
+
+        return []
+
+    try:
+
+        with open(
+            PROVINCE_CENTERS_FILE,
+            "r",
+            encoding="utf-8"
+        ) as file:
+
+            data = json.load(file)
+
+    except Exception as e:
+
+        print(
+            "⚠️ خطا در خواندن "
+            "province_centers.json:"
+        )
+
+        print(e)
+
+        return []
+
+    # -----------------------------------------------------
+    # پشتیبانی از چند ساختار JSON
+    # -----------------------------------------------------
+
+    if isinstance(data, dict):
+
+        if isinstance(
+            data.get("province_centers"),
+            list
+        ):
+
+            data = data[
+                "province_centers"
+            ]
+
+        elif isinstance(
+            data.get("centers"),
+            list
+        ):
+
+            data = data[
+                "centers"
+            ]
+
+        else:
+
+            data = []
+
+    if not isinstance(data, list):
+
+        print(
+            "⚠️ ساختار province_centers.json معتبر نیست."
+        )
+
+        return []
+
+    centers = []
+
+    for item in data:
+
+        if not isinstance(
+            item,
+            dict
+        ):
+            continue
+
+        province = (
+            item.get("province_en")
+            or item.get("province")
+            or item.get("name_en")
+        )
+
+        if not province:
+            continue
+
+        latitude = (
+            item.get("latitude")
+            if item.get("latitude") is not None
+            else item.get("lat")
+        )
+
+        longitude = (
+            item.get("longitude")
+            if item.get("longitude") is not None
+            else item.get("lon")
+        )
+
+        try:
+
+            latitude = float(
+                latitude
             )
 
-            print(e)
+            longitude = float(
+                longitude
+            )
+
+        except (
+            ValueError,
+            TypeError
+        ):
+
+            continue
+
+        if (
+            latitude < -90
+            or latitude > 90
+        ):
+            continue
+
+        if (
+            longitude < -180
+            or longitude > 180
+        ):
+            continue
+
+        centers.append({
+
+            "province_en": str(
+                province
+            ).strip(),
+
+            "name_en": (
+                item.get("name_en")
+                or ""
+            ),
+
+            "name_fa": (
+                item.get("name_fa")
+                or ""
+            ),
+
+            "latitude": latitude,
+
+            "longitude": longitude,
+        })
 
     print(
-        "⚠️ فایل province_centers.json پیدا نشد."
+        f"✅ مراکز ولایت‌ها بارگذاری شد: "
+        f"{len(centers)} ولایت"
     )
 
-    return []
+    return centers
 
+
+# =========================================================
+# بارگذاری
+# =========================================================
 
 PROVINCE_CENTERS = load_province_centers()
-
-
-# =========================================================
-# یکسان‌سازی نام ولایت‌ها
-# =========================================================
-
-PROVINCE_ALIASES = {
-
-    "کابل": "Kabul",
-    "Kabul": "Kabul",
-
-    "قندهار": "Kandahār",
-    "Kandahar": "Kandahār",
-    "Kandahār": "Kandahār",
-
-    "بلخ": "Balkh",
-    "Balkh": "Balkh",
-
-    "هرات": "Herāt",
-    "Herat": "Herāt",
-    "Herāt": "Herāt",
-
-    "ننگرهار": "Nangarhār",
-    "Nangarhar": "Nangarhār",
-    "Nangarhār": "Nangarhār",
-
-    "قندوز": "Kunduz",
-    "Kunduz": "Kunduz",
-
-    "بغلان": "Baghlān",
-    "Baghlan": "Baghlān",
-    "Baghlān": "Baghlān",
-
-    "فاریاب": "Fāryāb",
-    "Faryab": "Fāryāb",
-    "Fāryāb": "Fāryāb",
-
-    "جوزجان": "Jowzjān",
-    "Jowzjan": "Jowzjān",
-    "Jowzjān": "Jowzjān",
-
-    "هلمند": "Helmand",
-    "Helmand": "Helmand",
-
-    "تخار": "Takhār",
-    "Takhar": "Takhār",
-    "Takhār": "Takhār",
-
-    "غزنی": "Ghaznī",
-    "Ghazni": "Ghaznī",
-    "Ghaznī": "Ghaznī",
-
-    "پروان": "Parwān",
-    "Parwan": "Parwān",
-    "Parwān": "Parwān",
-
-    "بدخشان": "Badakhshān",
-    "Badakhshan": "Badakhshān",
-    "Badakhshān": "Badakhshān",
-
-    "زابل": "Zābul",
-    "Zabul": "Zābul",
-    "Zābul": "Zābul",
-
-    "فراه": "Farāh",
-    "Farah": "Farāh",
-    "Farāh": "Farāh",
-
-    "سرپل": "Sar-e Pul",
-    "Sar-e Pul": "Sar-e Pul",
-
-    "سمنگان": "Samangān",
-    "Samangan": "Samangān",
-    "Samangān": "Samangān",
-
-    "نیمروز": "Nīmrōz",
-    "Nimroz": "Nīmrōz",
-    "Nīmrōz": "Nīmrōz",
-
-    "پکتیا": "Paktiyā",
-    "Paktia": "Paktiyā",
-    "Paktiyā": "Paktiyā",
-
-    "پنجشیر": "Panjshir",
-    "Panjshir": "Panjshir",
-
-    "بادغیس": "Bādghīs",
-    "بدغیس": "Bādghīs",
-    "Badghis": "Bādghīs",
-    "Bādghīs": "Bādghīs",
-
-    "کنر": "Kunaṟ",
-    "Kunar": "Kunaṟ",
-    "Kunaṟ": "Kunaṟ",
-
-    "لغمان": "Laghmān",
-    "Laghman": "Laghmān",
-    "Laghmān": "Laghmān",
-
-    "نورستان": "Nūristān",
-    "Nuristan": "Nūristān",
-    "Nūristān": "Nūristān",
-
-    "بامیان": "Bāmyān",
-    "Bamyan": "Bāmyān",
-    "Bāmyān": "Bāmyān",
-
-    "دایکندی": "Dāykundī",
-    "Daykundi": "Dāykundī",
-    "Dāykundī": "Dāykundī",
-
-    "غور": "Ghōr",
-    "Ghor": "Ghōr",
-    "Ghōr": "Ghōr",
-
-    "ارزگان": "Uruzgān",
-    "Uruzgan": "Uruzgān",
-    "Uruzgān": "Uruzgān",
-
-    "لوگر": "Lōgar",
-    "Logar": "Lōgar",
-    "Lōgar": "Lōgar",
-
-    "میدان وردک": "Wardak",
-    "وردک": "Wardak",
-    "Wardak": "Wardak",
-
-    "کاپیسا": "Kāpīsā",
-    "Kapisa": "Kāpīsā",
-    "Kāpīsā": "Kāpīsā",
-
-    "پکتیکا": "Paktīkā",
-    "Paktika": "Paktīkā",
-    "Paktīkā": "Paktīkā",
-
-    "خوست": "Khōst",
-    "Khost": "Khōst",
-    "Khōst": "Khōst",
-}
 
 
 # =========================================================
@@ -573,26 +633,44 @@ def get_province_center(province):
         province
     ).strip()
 
-    normalized = PROVINCE_ALIASES.get(
-        province,
+    normalized = normalize_province_name(
         province
     )
 
-    # تطبیق province_en
+    # -----------------------------------------------------
+    # جستجوی دقیق با نام نرمال‌شده
+    # -----------------------------------------------------
+
     for center in PROVINCE_CENTERS:
 
         center_province = str(
-            center.get("province_en", "")
+            center.get(
+                "province_en",
+                ""
+            )
         ).strip()
 
-        if center_province == normalized:
+        center_normalized = (
+            normalize_province_name(
+                center_province
+            )
+        )
+
+        if center_normalized == normalized:
+
             return center
 
-    # تطبیق بدون توجه به حروف بزرگ و کوچک
+    # -----------------------------------------------------
+    # جستجوی مستقیم
+    # -----------------------------------------------------
+
     for center in PROVINCE_CENTERS:
 
         center_province = str(
-            center.get("province_en", "")
+            center.get(
+                "province_en",
+                ""
+            )
         ).strip()
 
         if (
@@ -630,6 +708,22 @@ def calculate_distance_km(
 
         return None
 
+    if (
+        lat1 < -90
+        or lat1 > 90
+        or lat2 < -90
+        or lat2 > 90
+    ):
+        return None
+
+    if (
+        lon1 < -180
+        or lon1 > 180
+        or lon2 < -180
+        or lon2 > 180
+    ):
+        return None
+
     earth_radius_km = 6371.0088
 
     lat1_rad = math.radians(
@@ -649,13 +743,23 @@ def calculate_distance_km(
     )
 
     a = (
-        math.sin(delta_lat / 2) ** 2
+        math.sin(
+            delta_lat / 2
+        ) ** 2
         +
         math.cos(lat1_rad)
         *
         math.cos(lat2_rad)
         *
-        math.sin(delta_lon / 2) ** 2
+        math.sin(
+            delta_lon / 2
+        ) ** 2
+    )
+
+    # جلوگیری از خطای احتمالی اعشاری
+    a = min(
+        1.0,
+        max(0.0, a)
     )
 
     c = 2 * math.atan2(
@@ -663,7 +767,9 @@ def calculate_distance_km(
         math.sqrt(1 - a)
     )
 
-    return earth_radius_km * c
+    return (
+        earth_radius_km * c
+    )
 
 
 # =========================================================
@@ -682,14 +788,28 @@ def get_province_center_info(
 
     if center is None:
 
+        # اگر مرکز در JSON نبود،
+        # حداقل نام فارسی مرکز را بده
+
+        key = normalize_province_name(
+            province
+        )
+
+        fallback_name = (
+            PROVINCE_CENTER_FA.get(
+                key
+            )
+        )
+
         return (
-            "ثبت نشده",
+            fallback_name
+            or "ثبت نشده",
             None
         )
 
-    center_name = center.get(
-        "name_en"
-    )
+    # -----------------------------------------------------
+    # مختصات مرکز
+    # -----------------------------------------------------
 
     center_lat = center.get(
         "latitude"
@@ -698,6 +818,10 @@ def get_province_center_info(
     center_lon = center.get(
         "longitude"
     )
+
+    # -----------------------------------------------------
+    # محاسبه فاصله
+    # -----------------------------------------------------
 
     distance = calculate_distance_km(
         latitude,
@@ -712,6 +836,21 @@ def get_province_center_info(
             distance,
             1
         )
+
+    # -----------------------------------------------------
+    # نام مرکز
+    # -----------------------------------------------------
+
+    key = normalize_province_name(
+        province
+    )
+
+    center_name = (
+        center.get("name_fa")
+        or PROVINCE_CENTER_FA.get(key)
+        or center.get("name_en")
+        or "ثبت نشده"
+    )
 
     return (
         clean_value(
@@ -730,7 +869,10 @@ def build_dam_text(
     number=None
 ):
 
-    if not isinstance(dam, dict):
+    if not isinstance(
+        dam,
+        dict
+    ):
 
         return (
             "❌ اطلاعات سد نامعتبر است."
@@ -780,8 +922,8 @@ def build_dam_text(
     # مختصات
     # -----------------------------------------------------
 
-    latitude, longitude = get_coordinates(
-        dam
+    latitude, longitude = (
+        get_coordinates(dam)
     )
 
     lat = clean_value(
@@ -796,17 +938,20 @@ def build_dam_text(
     # مرکز ولایت و فاصله
     # -----------------------------------------------------
 
-    province_center, calculated_distance = (
-        get_province_center_info(
-            province,
-            latitude,
-            longitude
-        )
+    (
+        province_center,
+        calculated_distance
+    ) = get_province_center_info(
+        province,
+        latitude,
+        longitude
     )
 
     if calculated_distance is not None:
 
-        distance = f"{calculated_distance:.1f}"
+        distance = (
+            f"{calculated_distance:.1f}"
+        )
 
     else:
 
@@ -856,14 +1001,24 @@ def build_dam_text(
     )
 
     power = clean_value(
-        dam.get("power_capacity_mw")
-        or dam.get("power_mw")
-        or dam.get("capacity_mw")
+        dam.get(
+            "power_capacity_mw"
+        )
+        or dam.get(
+            "power_mw"
+        )
+        or dam.get(
+            "capacity_mw"
+        )
     )
 
     irrigation = clean_value(
-        dam.get("irrigation_area_ha")
-        or dam.get("irrigation_ha")
+        dam.get(
+            "irrigation_area_ha"
+        )
+        or dam.get(
+            "irrigation_ha"
+        )
     )
 
     # -----------------------------------------------------
@@ -876,32 +1031,44 @@ def build_dam_text(
     )
 
     location_description = clean_value(
-        dam.get("location_description"),
+        dam.get(
+            "location_description"
+        ),
         ""
     )
 
     type_description = clean_value(
-        dam.get("type_description"),
+        dam.get(
+            "type_description"
+        ),
         ""
     )
 
     history_description = clean_value(
-        dam.get("history_description"),
+        dam.get(
+            "history_description"
+        ),
         ""
     )
 
     purpose_description = clean_value(
-        dam.get("purpose_description"),
+        dam.get(
+            "purpose_description"
+        ),
         ""
     )
 
     importance_description = clean_value(
-        dam.get("importance_description"),
+        dam.get(
+            "importance_description"
+        ),
         ""
     )
 
     power_description = clean_value(
-        dam.get("power_description"),
+        dam.get(
+            "power_description"
+        ),
         ""
     )
 
@@ -945,7 +1112,8 @@ def build_dam_text(
         "📍 <b>موقعیت</b>\n"
         f"🇦🇫 ولایت: {province}\n"
         f"🏘 ولسوالی: {district}\n"
-        f"🏙 مرکز ولایت: {province_center}\n"
+        f"🏙 مرکز ولایت: "
+        f"{province_center}\n"
         f"📏 فاصله تا مرکز ولایت: "
         f"{distance} km\n"
         f"📌 وضعیت: {status}\n\n"
