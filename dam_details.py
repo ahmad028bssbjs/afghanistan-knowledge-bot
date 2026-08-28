@@ -246,49 +246,154 @@ def get_status_fa(status):
         status,
         status
     )
-
-
 # =========================================================
-# خواندن مراکز ولایت‌ها
+# نرمال‌سازی نام ولایت
 # =========================================================
 
-def load_province_centers():
+import unicodedata
 
-    possible_paths = [
 
-        Path(
-            "data/provinces/province_centers.json"
-        ),
+def normalize_province_name(name):
+    """
+    تبدیل نام فارسی/انگلیسی ولایت به یک کلید استاندارد.
 
-        Path(__file__).parent / (
-            "data/provinces/province_centers.json"
-        ),
-    ]
+    این تابع حروف دارای علامت مانند:
+        Kābul -> Kabul
+        Kandahār -> Kandahar
+        Nangarhār -> Nangarhar
+        Fāryāb -> Faryab
 
-    for path in possible_paths:
+    را نیز پشتیبانی می‌کند.
+    """
 
-        try:
+    if name is None:
+        return ""
 
-            if not path.exists():
-                continue
+    name = str(name).strip()
 
-            with open(
-                path,
-                "r",
-                encoding="utf-8"
-            ) as f:
+    if not name:
+        return ""
 
-                data = json.load(f)
+    # -----------------------------------------------------
+    # نام‌های فارسی
+    # -----------------------------------------------------
 
-            centers = data.get(
-                "province_centers",
-                []
-            )
+    persian_names = {
+        "کابل": "Kabul",
+        "قندهار": "Kandahar",
+        "هرات": "Herat",
+        "ننگرهار": "Nangarhar",
+        "بدخشان": "Badakhshan",
+        "تخار": "Takhar",
+        "بغلان": "Baghlan",
+        "فاریاب": "Faryab",
+        "غزنی": "Ghazni",
+        "پروان": "Parwan",
+        "کاپیسا": "Kapisa",
+        "لوگر": "Logar",
+        "میدان وردک": "Wardak",
+        "وردک": "Wardak",
+        "هلمند": "Helmand",
+        "زابل": "Zabul",
+        "فراه": "Farah",
+        "سرپل": "Sar-e Pul",
+        "سمنگان": "Samangan",
+        "نیمروز": "Nimroz",
+        "پکتیا": "Paktia",
+        "پنجشیر": "Panjshir",
+        "بادغیس": "Badghis",
+        "کنر": "Kunar",
+        "بامیان": "Bamyan",
+        "خوست": "Khost",
+        "نورستان": "Nuristan",
+        "غور": "Ghor",
+        "ارزگان": "Uruzgan",
+        "لغمان": "Laghman",
+        "پکتیکا": "Paktika",
+        "دایکندی": "Daykundi",
+        "کندز": "Kunduz",
+        "بلخ": "Balkh",
+        "جوزجان": "Jowzjan",
+        "سرپل": "Sar-e Pul",
+    }
 
-            if isinstance(
-                centers,
-                list
-            ):
+    if name in persian_names:
+        return persian_names[name]
+
+    # -----------------------------------------------------
+    # نرمال‌سازی Unicode
+    # حذف علامت‌های روی حروف:
+    #
+    # Kābul     -> Kabul
+    # Kandahār  -> Kandahar
+    # Fāryāb    -> Faryab
+    # -----------------------------------------------------
+
+    normalized = unicodedata.normalize(
+        "NFKD",
+        name
+    )
+
+    normalized = "".join(
+        char
+        for char in normalized
+        if not unicodedata.combining(char)
+    )
+
+    # -----------------------------------------------------
+    # یکسان‌سازی فاصله
+    # -----------------------------------------------------
+
+    normalized = " ".join(
+        normalized.split()
+    )
+
+    # -----------------------------------------------------
+    # نام‌های انگلیسی استاندارد
+    # -----------------------------------------------------
+
+    english_names = {
+        "Kabul": "Kabul",
+        "Kandahar": "Kandahar",
+        "Herat": "Herat",
+        "Nangarhar": "Nangarhar",
+        "Badakhshan": "Badakhshan",
+        "Takhar": "Takhar",
+        "Baghlan": "Baghlan",
+        "Faryab": "Faryab",
+        "Ghazni": "Ghazni",
+        "Parwan": "Parwan",
+        "Kapisa": "Kapisa",
+        "Logar": "Logar",
+        "Wardak": "Wardak",
+        "Helmand": "Helmand",
+        "Zabul": "Zabul",
+        "Farah": "Farah",
+        "Sar-e Pul": "Sar-e Pul",
+        "Samangan": "Samangan",
+        "Nimroz": "Nimroz",
+        "Paktia": "Paktia",
+        "Panjshir": "Panjshir",
+        "Badghis": "Badghis",
+        "Kunar": "Kunar",
+        "Bamyan": "Bamyan",
+        "Khost": "Khost",
+        "Nuristan": "Nuristan",
+        "Ghor": "Ghor",
+        "Uruzgan": "Uruzgan",
+        "Laghman": "Laghman",
+        "Paktika": "Paktika",
+        "Daykundi": "Daykundi",
+        "Kunduz": "Kunduz",
+        "Balkh": "Balkh",
+        "Jowzjan": "Jowzjan",
+    }
+
+    return english_names.get(
+        normalized,
+        normalized
+    )
+
 
                 print(
                     f"✅ مراکز ولایت‌ها بارگذاری شد: "
