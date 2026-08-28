@@ -2,7 +2,7 @@
   "country": "Afghanistan",
   "country_iso": "AFG",
   "source": "GeoDAR v1.1",
-  "count": 7,
+  "count": 22,
   "dams": [
     {
       "geodar_id": "1",
@@ -35,7 +35,17 @@
       "construction_year": 1967,
       "river": "رودخانه گردیز",
       "purpose": "مهار آب و ایجاد مخزن برای تأمین آب مورد نیاز کشاورزی در بخش‌هایی از جنوب غزنی.",
-      "power_capacity_mw": null
+      "power_capacity_mw": null,
+      "name_fa": "بند سرده",
+      "name_en": "Sarda Dam",
+      "status": "active",
+      "description_fa": "بند سرده در ولایت غزنی یک سد خاکی برای ذخیره آب و استفاده زراعتی است.",
+      "purposes": [
+        "water_storage",
+        "irrigation"
+      ],
+      "storage_capacity_mcm": 260,
+      "height_m": 30
     },
     {
       "geodar_id": "2",
@@ -68,7 +78,18 @@
       "construction_year": 1953,
       "river": "رودخانه هلمند (هیرمند)",
       "purpose": "تولید برق‌آبی و تأمین آب برای آبیاری زمین‌های کشاورزی در هلمند و قندهار.",
-      "power_capacity_mw": null
+      "power_capacity_mw": null,
+      "name_fa": "بند کجکی",
+      "name_en": "Kajaki Dam",
+      "status": "active",
+      "description_fa": "بند کجکی در ولایت هلمند بر روی رودخانه هلمند قرار دارد و برای ذخیره آب، آبیاری و تولید برق استفاده می‌شود.",
+      "purposes": [
+        "water_storage",
+        "irrigation",
+        "hydropower"
+      ],
+      "storage_capacity_mcm": 1715,
+      "height_m": 100
     },
     {
       "geodar_id": "3",
@@ -101,7 +122,17 @@
       "construction_year": 1957,
       "river": "رودخانه کابل",
       "purpose": "تولید برق و کمک به تأمین برق کابل و مناطق اطراف.",
-      "power_capacity_mw": 22
+      "power_capacity_mw": 22,
+      "name_fa": "بند سروبی",
+      "name_en": "Sarobi Dam",
+      "status": "active",
+      "description_fa": "بند سروبی در حوزه رودخانه کابل قرار دارد و از تأسیسات مهم برق‌آبی افغانستان است.",
+      "purposes": [
+        "hydropower",
+        "water_management"
+      ],
+      "storage_capacity_mcm": 13,
+      "height_m": 24
     },
     {
       "geodar_id": "4",
@@ -134,7 +165,17 @@
       "construction_year": 1964,
       "river": "رودخانه کابل",
       "purpose": "تولید برق‌آبی، تأمین آب کشاورزی و کمک به آبیاری در ننگرهار.",
-      "power_capacity_mw": 11.5
+      "power_capacity_mw": 11.5,
+      "name_fa": "بند درونته",
+      "name_en": "Darunta Dam",
+      "status": "active",
+      "description_fa": "بند درونته در ولایت ننگرهار قرار دارد و برای تولید برق و انتقال آب برای آبیاری استفاده می‌شود.",
+      "purposes": [
+        "hydropower",
+        "irrigation"
+      ],
+      "storage_capacity_mcm": 40,
+      "height_m": 22
     },
     {
       "geodar_id": "5",
@@ -167,7 +208,18 @@
       "construction_year": 1952,
       "river": "رودخانه ارغنداب",
       "purpose": "مهار سیلاب‌ها و تأمین آب برای کانال‌های آبیاری، زمین‌های کشاورزی و باغات قندهار.",
-      "power_capacity_mw": null
+      "power_capacity_mw": null,
+      "name_fa": "بند دهله",
+      "name_en": "Dahla Dam",
+      "status": "active",
+      "description_fa": "بند دهله یا ارغنداب در ولایت قندهار بر روی رودخانه ارغنداب قرار دارد و برای ذخیره آب و آبیاری استفاده می‌شود.",
+      "purposes": [
+        "water_storage",
+        "irrigation",
+        "flood_management"
+      ],
+      "storage_capacity_mcm": 478,
+      "height_m": 55
     },
     {
       "geodar_id": "23506",
@@ -200,7 +252,17 @@
       "construction_year": 1968,
       "river": "رودخانه کابل و محل تلاقی با رودخانه پنجشیر",
       "purpose": "تولید برق و تأمین برق کابل و مناطق اطراف.",
-      "power_capacity_mw": 100
+      "power_capacity_mw": 100,
+      "name_fa": "بند نغلو",
+      "name_en": "Naghlu Dam",
+      "status": "active",
+      "description_fa": "بند نغلو در حوزه رودخانه کابل قرار دارد و یکی از مهم‌ترین تأسیسات برق‌آبی افغانستان است.",
+      "purposes": [
+        "hydropower",
+        "water_storage"
+      ],
+      "storage_capacity_mcm": 550,
+      "height_m": 110
     },
     {
       "geodar_id": "24517",
@@ -233,7 +295,352 @@
       "construction_year": 2016,
       "river": "رودخانه هریرود",
       "purpose": "تولید برق‌آبی و تأمین آب برای آبیاری زمین‌های کشاورزی در ولایت هرات.",
-      "power_capacity_mw": 42
+      "power_capacity_mw": 42,
+      "name_fa": "بند سلما / بند دوستی افغان-هند",
+      "name_en": "Salma Dam / Afghan-India Friendship Dam",
+      "status": "active",
+      "description_fa": "بند سلما یا بند دوستی افغان-هند در ولایت هرات بر روی رودخانه هریرود قرار دارد و برای تولید برق و آبیاری استفاده می‌شود.",
+      "purposes": [
+        "hydropower",
+        "irrigation",
+        "water_storage"
+      ],
+      "storage_capacity_mcm": 633,
+      "height_m": 107.5
+    },
+    {
+      "dam_name_fa": "بند پاشدان",
+      "dam_name": "Pashdan Dam",
+      "province": "Herat",
+      "district": "Karukh",
+      "latitude": 34.40555,
+      "longitude": 62.42506,
+      "description": "بند پاشدان در ولایت هرات و بر روی حوزه هریرود قرار دارد و برای ذخیره آب، آبیاری و تولید برق استفاده می‌شود.",
+      "geodar_id": "local_9",
+      "source": "Verified geographic/map sources",
+      "name_fa": "بند پاشدان",
+      "name_en": "Pashdan Dam",
+      "status": "under_construction",
+      "description_fa": "بند پاشدان در ولایت هرات از پروژه‌های چندمنظوره مدیریت آب است و برای ذخیره آب، آبیاری، کنترل سیلاب و تولید برق در نظر گرفته شده است.",
+      "purposes": [
+        "water_storage",
+        "irrigation",
+        "flood_management",
+        "hydropower"
+      ],
+      "storage_capacity_mcm": 45,
+      "height_m": 45,
+      "power_capacity_mw": 2
+    },
+    {
+      "dam_name_fa": "بند قرغه",
+      "dam_name": "Qargha Dam",
+      "province": "Kabul",
+      "district": "Paghman",
+      "latitude": 34.55281,
+      "longitude": 69.03426,
+      "description": "بند قرغه در غرب کابل قرار دارد و برای تفریح، ذخیره آب و فعالیت‌های مرتبط با آب استفاده می‌شود.",
+      "geodar_id": "local_10",
+      "source": "Verified geographic/map sources",
+      "name_fa": "بند قرغه",
+      "name_en": "Qargha Dam",
+      "status": "active",
+      "description_fa": "بند قرغه یک سد خاکی در غرب شهر کابل است که برای ذخیره آب و استفاده‌های تفریحی و مدیریت منابع آب منطقه اهمیت دارد.",
+      "purposes": [
+        "water_storage",
+        "irrigation",
+        "recreation"
+      ],
+      "storage_capacity_mcm": 6.5,
+      "height_m": 30
+    },
+    {
+      "dam_name_fa": "بند شاه و عروس",
+      "dam_name": "Shah wa Arus Dam",
+      "province": "Kabul",
+      "district": "Shakardara",
+      "latitude": 34.68803,
+      "longitude": 69.01939,
+      "description": "بند شاه و عروس در ولسوالی شکردره کابل قرار دارد و برای تأمین آب و کنترل سیلاب استفاده می‌شود.",
+      "geodar_id": "local_11",
+      "source": "Verified geographic/map sources",
+      "name_fa": "بند شاه‌وعروس",
+      "name_en": "Shah wa Arus Dam",
+      "status": "active",
+      "description_fa": "بند شاه‌وعروس در ولسوالی شکردره ولایت کابل قرار دارد و برای ذخیره آب، تأمین آب و مدیریت سیلاب‌های فصلی استفاده می‌شود.",
+      "purposes": [
+        "water_storage",
+        "drinking_water",
+        "flood_management"
+      ]
+    },
+    {
+      "name_fa": "بند انحرافی ماهیپر",
+      "name_en": "Mahipar Diversion Dam",
+      "province": "Kabul",
+      "district": null,
+      "type": "Diversion / Hydroelectric",
+      "status": "active",
+      "latitude": 34.5561,
+      "longitude": 69.4791,
+      "river_basin": "Kabul River Basin",
+      "purposes": [
+        "hydropower",
+        "water_diversion"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند انحرافی ماهیپر بخشی از مجموعه تأسیسات برق‌آبی ماهیپر در حوزه رودخانه کابل است.",
+      "source": "Geographic/map information",
+      "local_id": "local_16"
+    },
+    {
+      "name_fa": "نیروگاه ماهیپر",
+      "name_en": "Mahipar Powerhouse",
+      "province": "Kabul",
+      "district": null,
+      "type": "Hydroelectric Station",
+      "status": "active",
+      "latitude": 34.5638,
+      "longitude": 69.4932,
+      "river_basin": "Kabul River Basin",
+      "purposes": [
+        "hydropower"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "نیروگاه ماهیپر یکی از تأسیسات برق‌آبی حوزه کابل است.",
+      "source": "Geographic/map information",
+      "local_id": "local_17"
+    },
+    {
+      "name_fa": "بند چک وردک",
+      "name_en": "Chaki Wardak Dam",
+      "province": "Maidan Wardak",
+      "district": "Chak-e Wardak",
+      "type": "Gravity / Hydroelectric",
+      "status": "active",
+      "latitude": 34.1068,
+      "longitude": 68.5785,
+      "river_basin": "Kabul River Basin",
+      "purposes": [
+        "hydropower",
+        "water_storage",
+        "irrigation"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند چک وردک از تأسیسات قدیمی مدیریت آب و تولید برق در ولایت میدان وردک است.",
+      "source": "Geographic/map information",
+      "local_id": "local_18"
+    },
+    {
+      "name_fa": "بند شورابک",
+      "name_en": "Shorabak Dam",
+      "province": "Badakhshan",
+      "district": "Faizabad",
+      "type": "Concrete Gravity / Hydroelectric",
+      "status": "active",
+      "latitude": 37.0864,
+      "longitude": 70.6272,
+      "river_basin": "Kokcha River Basin",
+      "purposes": [
+        "hydropower",
+        "local_energy"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند شورابک در حوزه رودخانه کوکچه ولایت بدخشان قرار دارد و برای تولید انرژی برق‌آبی منطقه استفاده می‌شود.",
+      "source": "Geographic/map information",
+      "local_id": "local_19"
+    },
+    {
+      "name_fa": "بند سوختوک",
+      "name_en": "Sukhtook Dam",
+      "province": "Daikundi",
+      "district": null,
+      "type": "Micro-Hydroelectric / Storage",
+      "status": "active",
+      "latitude": 33.7258,
+      "longitude": 66.1264,
+      "river_basin": null,
+      "purposes": [
+        "hydropower",
+        "water_storage"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند سوختوک در ولایت دایکندی قرار دارد و برای تأمین انرژی برق‌آبی و مدیریت آب منطقه استفاده می‌شود.",
+      "opening_year": 2021,
+      "source": "Ministry of Energy and Water / geographic information",
+      "local_id": "local_20"
+    },
+    {
+      "name_fa": "بند پلتونی",
+      "name_en": "Paltuni Dam",
+      "province": "Paktika",
+      "district": null,
+      "type": "Earth-fill / Irrigation",
+      "status": "under_construction",
+      "latitude": 32.8465,
+      "longitude": 69.1232,
+      "river_basin": null,
+      "purposes": [
+        "irrigation",
+        "water_storage"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند پلتونی پروژه‌ای برای ذخیره و مدیریت آب و استفاده زراعتی در ولایت پکتیکا است.",
+      "source": "DPMEA / Ministry of Energy and Water",
+      "local_id": "local_21"
+    },
+    {
+      "name_fa": "بند آغا جان",
+      "name_en": "Agha Jan Dam",
+      "province": "Uruzgan",
+      "district": null,
+      "type": "Earth-fill / Irrigation",
+      "status": "under_construction",
+      "latitude": 32.8711,
+      "longitude": 65.9422,
+      "river_basin": "Helmand River Basin",
+      "purposes": [
+        "irrigation",
+        "water_storage"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند آغا جان پروژه‌ای برای مدیریت آب و توسعه استفاده زراعتی در ولایت ارزگان است.",
+      "source": "DPMEA / Ministry of Energy and Water",
+      "local_id": "local_22"
+    },
+    {
+      "name_fa": "بند لوره / لاوری",
+      "name_en": "Lora / Lawari Dam",
+      "province": "Kandahar",
+      "district": null,
+      "type": "Earth-fill / Irrigation",
+      "status": "active",
+      "latitude": 31.4691,
+      "longitude": 66.2163,
+      "river_basin": "Helmand River Basin",
+      "purposes": [
+        "irrigation",
+        "water_storage"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند لوره/لاوری در حوزه آبریز هلمند در ولایت قندهار قرار دارد و برای استفاده زراعتی و مدیریت آب استفاده می‌شود.",
+      "source": "Helmand River Basin information / geographic information",
+      "local_id": "local_23"
+    },
+    {
+      "name_fa": "بند کدنه",
+      "name_en": "Kadani Dam",
+      "province": "Kandahar",
+      "district": null,
+      "type": "Irrigation / Water Storage",
+      "status": "active_partially",
+      "latitude": 31.0625,
+      "longitude": 66.2411,
+      "river_basin": "Helmand River Basin",
+      "purposes": [
+        "irrigation",
+        "water_storage"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند کدنه یک سازه ذخیره و مدیریت آب در حوزه جنوبی افغانستان است.",
+      "source": "Helmand River Basin information / geographic information",
+      "local_id": "local_24"
+    },
+    {
+      "name_fa": "بند سلطان",
+      "name_en": "Sultan Dam",
+      "province": "Ghazni",
+      "district": null,
+      "type": "Earth-fill / Historical",
+      "status": "active",
+      "latitude": 33.7547,
+      "longitude": 68.3842,
+      "river_basin": null,
+      "purposes": [
+        "irrigation",
+        "water_storage",
+        "historical_water_management"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "بند سلطان یک سد تاریخی در ولایت غزنی است که برای ذخیره و استفاده زراعتی آب منطقه کاربرد دارد.",
+      "source": "Historical/geographic information",
+      "local_id": "local_25"
+    },
+    {
+      "name_fa": "بند باغدره",
+      "name_en": "Bagh Dara Dam",
+      "province": "Kapisa",
+      "district": null,
+      "type": "Mega Hydroelectric (Proposed Structure)",
+      "status": "proposed",
+      "latitude": 35.0312,
+      "longitude": 69.3458,
+      "river_basin": "Panjshir River Basin",
+      "purposes": [
+        "hydropower",
+        "water_storage",
+        "water_supply"
+      ],
+      "storage_capacity_mcm": null,
+      "height_m": null,
+      "irrigation_area_ha": null,
+      "power_capacity_mw": null,
+      "description_fa": "باغدره یک پروژه بزرگ پیشنهادی برق‌آبی در حوزه رودخانه پنجشیر است.",
+      "source": "Kabul River Basin project information",
+      "local_id": "local_26"
+    },
+    {
+      "name_fa": "بند شاه‌توت / للندر",
+      "name_en": "Shahtoot / Lalandar Dam",
+      "province": "Kabul",
+      "district": "Chahar Asyab",
+      "type": "Storage / Drinking Water",
+      "status": "under_construction",
+      "latitude": 34.4316,
+      "longitude": 68.8341,
+      "river_basin": "Kabul River Basin",
+      "purposes": [
+        "drinking_water",
+        "irrigation",
+        "flood_management",
+        "hydropower"
+      ],
+      "storage_capacity_mcm": 146,
+      "height_m": 92,
+      "irrigation_area_ha": 2080,
+      "power_capacity_mw": 2,
+      "description_fa": "پروژه بند شاه‌توت/للندر برای تأمین آب آشامیدنی، آبیاری و مدیریت منابع آب کابل طراحی شده است.",
+      "source": "Ministry of Energy and Water"
     }
   ]
 }
